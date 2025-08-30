@@ -1,251 +1,389 @@
-# BrowserTools MCP
+# 🚀 MCP-Tools: Advanced Browser Automation & Web Analysis
 
-> Make your AI tools 10x more aware and capable of interacting with your browser
+> **Enterprise-grade browser automation platform with W3C WebDriver BiDi, network interception, and comprehensive web analysis**
 
-This application is a powerful browser monitoring and interaction tool that enables AI-powered applications via Anthropic's Model Context Protocol (MCP) to capture and analyze browser data through a Chrome extension.
+A powerful collection of Model Context Protocol (MCP) tools for advanced browser automation, web analysis, and development workflows. Built with Node.js, Docker, and cutting-edge web technologies including the latest W3C standards.
 
-Read our [docs](https://browsertools.agentdesk.ai/) for the full installation, quickstart and contribution guides.
+## ✨ Features
 
-## 📚 Documentation
+### 🔍 **Advanced Screenshot Capabilities**
+- **HTTPS Support**: Handle self-signed certificates automatically
+- **Full Page Rendering**: Capture complete web pages with dynamic content
+- **Custom Viewports**: Support for desktop, mobile, and tablet resolutions
+- **Direct URL Access**: No browser navigation required
 
-All documentation is organized in the `/docs` directory:
+### 📊 **Lighthouse Integration**
+- **Performance Audits**: Detailed performance metrics and optimization suggestions
+- **Accessibility Testing**: WCAG compliance and accessibility analysis
+- **SEO Analysis**: Meta tags, structured data, and SEO optimization
+- **Best Practices**: Security, performance, and coding standards
 
-- **[Extended Features Guide](docs/EXTENDED_FEATURES.md)** - Comprehensive guide to all new features
-- **[Docker Setup Guide](docs/DOCKER_README.md)** - Complete Docker development environment
-- **[API Guide](docs/EXTENDED_API_GUIDE.md)** - Extended BrowserTools API documentation
-- **[Feature Summary](docs/FEATURE_SUMMARY.md)** - Overview of all available features
-- **[Cursor Setup](docs/CURSOR_SETUP.md)** - Cursor IDE integration guide
-- **[Extension Testing](docs/EXTENSION_TESTING_GUIDE.md)** - Chrome extension testing guide
-- **[Chromium Guide](docs/CHROMIUM_GUIDE.md)** - Chromium-based automation guide
+### 🔧 **Development Tools**
+- **Console Monitoring**: Real-time console logs and error tracking
+- **Network Analysis**: Request/response monitoring and debugging
+- **Enhanced Element Interactions**: Advanced locator-based interactions with automatic waiting
+- **Advanced Selectors**: Text, ARIA, and Shadow DOM selectors
+- **Form Automation**: Multi-field form filling with validation
+- **Keyboard & Mouse Control**: Precise input and click interactions
+- **JavaScript Execution**: Execute JavaScript in page context with full DOM access
+- **Element Script Execution**: Run scripts on specific elements or element collections
+- **Script Injection**: Inject and execute custom scripts with page context access
+- **Network Interception**: Intercept, block, modify, and mock network requests
+- **Request/Response Monitoring**: Real-time network traffic analysis
+- **WebDriver BiDi**: W3C-standard bidirectional browser automation protocol
+- **Real-time Events**: Live browsing context and script events
+- **Responsive Testing**: Cross-device compatibility validation
 
-## Roadmap
+### 🐳 **Docker Integration**
+- **Containerized Environment**: Consistent deployment across platforms
+- **HTTPS Support**: Built-in SSL certificate generation
+- **Easy Setup**: One-command deployment with Docker Compose
 
-Check out our project roadmap here: [Github Roadmap / Project Board](https://github.com/orgs/AgentDeskAI/projects/1/views/1)
+## 🚀 Quick Start
 
-## Updates
+### Prerequisites
+- Docker and Docker Compose
+- Node.js 18+ (for local development)
+- Git
 
-v1.2.0 is out! Here's a quick breakdown of the update:
-- You can now enable "Allow Auto-Paste into Cursor" within the DevTools panel. Screenshots will be automatically pasted into Cursor (just make sure to focus/click into the Agent input field in Cursor, otherwise it won't work!)
-- Integrated a suite of SEO, performance, accessibility, and best practice analysis tools via Lighthouse
-- Implemented a NextJS specific prompt used to improve SEO for a NextJS application
-- Added Debugger Mode as a tool which executes all debugging tools in a particular sequence, along with a prompt to improve reasoning
-- Added Audit Mode as a tool to execute all auditing tools in a particular sequence
-- Resolved Windows connectivity issues
-- Improved networking between BrowserTools server, extension and MCP server with host/port auto-discovery, auto-reconnect, and graceful shutdown mechanisms
-- Added ability to more easily exit out of the Browser Tools server with Ctrl+C
+### Installation
 
-## Quickstart Guide
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/zachshallbetter/MCP-Tools.git
+   cd MCP-Tools
+   ```
 
-There are three components to run this MCP tool:
+2. **Start with Docker**
+   ```bash
+   docker-compose up -d
+   ```
 
-1. Install our chrome extension from here: [v1.2.0 BrowserToolsMCP Chrome Extension](https://github.com/AgentDeskAI/browser-tools-mcp/releases/download/v1.2.0/BrowserTools-1.2.0-extension.zip)
-2. Install the MCP server from this command within your IDE: `npx @agentdeskai/browser-tools-mcp@latest`
-3. Open a new terminal and run this command: `npx @agentdeskai/browser-tools-server@latest`
+3. **Verify installation**
+   ```bash
+   curl http://localhost:3025/.identity
+   ```
 
-* Different IDEs have different configs but this command is generally a good starting point; please reference your IDEs docs for the proper config setup
+### MCP Configuration
 
-IMPORTANT TIP - there are two servers you need to install. There's...
-- browser-tools-server (local nodejs server that's a middleware for gathering logs)
-and
-- browser-tools-mcp (MCP server that you install into your IDE that communicates w/ the extension + browser-tools-server)
+Add to your MCP configuration (e.g., `~/.cursor/mcp.json`):
 
-`npx @agentdeskai/browser-tools-mcp@latest` is what you put into your IDE
-`npx @agentdeskai/browser-tools-server@latest` is what you run in a new terminal window
+```json
+{
+  "mcpServers": {
+    "browser-tools": {
+      "command": "node",
+      "args": [
+        "/path/to/MCP-Tools/browser-tools-mcp/dist/mcp-server.js"
+      ],
+      "env": {}
+    }
+  }
+}
+```
 
-After those three steps, open up your chrome dev tools and then the BrowserToolsMCP panel.
+## 📖 Usage Examples
 
-If you're still having issues try these steps:
-- Quit / close down your browser. Not just the window but all of Chrome itself. 
-- Restart the local node server (browser-tools-server)
-- Make sure you only have ONE instance of chrome dev tools panel open
+### Screenshots
+```bash
+# Take a screenshot of any website
+curl -X POST http://localhost:3025/capture-screenshot \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "fullPage": true}'
+```
 
-After that, it should work but if it doesn't let me know and I can share some more steps to gather logs/info about the issue!
+### Lighthouse Audits
+```bash
+# Run comprehensive Lighthouse audit
+curl -X POST http://localhost:3025/lighthouse-audit \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+```
 
-If you have any questions or issues, feel free to open an issue ticket! And if you have any ideas to make this better, feel free to reach out or open an issue ticket with an enhancement tag or reach out to me at [@tedx_ai on x](https://x.com/tedx_ai)
+### Enhanced Element Interactions
+```bash
+# Click element with automatic waiting and stability checks
+curl -X POST http://localhost:3025/interact/click \
+  -H "Content-Type: application/json" \
+  -d '{"selector": "button[type=\"submit\"]", "url": "https://example.com"}'
 
-## Full Update Notes:
+# Fill input with smart detection
+curl -X POST http://localhost:3025/interact/fill \
+  -H "Content-Type: application/json" \
+  -d '{"selector": "input[name=\"email\"]", "value": "user@example.com"}'
 
-Coding agents like Cursor can run these audits against the current page seamlessly. By leveraging Puppeteer and the Lighthouse npm library, BrowserTools MCP can now:
+# Find element by text content
+curl -X POST http://localhost:3025/interact/text-selector \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Submit Form", "url": "https://example.com"}'
+```
 
-- Evaluate pages for WCAG compliance
-- Identify performance bottlenecks
-- Flag on-page SEO issues
-- Check adherence to web development best practices
-- Review NextJS specific issues with SEO
+### JavaScript Execution
+```bash
+# Execute JavaScript in page context
+curl -X POST http://localhost:3025/js/evaluate \
+  -H "Content-Type: application/json" \
+  -d '{"script": "return document.title;", "url": "https://example.com"}'
 
-...all without leaving your IDE 🎉
+# Execute function with arguments
+curl -X POST http://localhost:3025/js/execute-function \
+  -H "Content-Type: application/json" \
+  -d '{"functionBody": "return arg0 + arg1;", "args": [5, 10]}'
+
+# Execute script on specific element
+curl -X POST http://localhost:3025/js/execute-on-element \
+  -H "Content-Type: application/json" \
+  -d '{"selector": "input[name=\"email\"]", "script": "return this.value;"}'
+```
+
+### Network Interception
+```bash
+# Enable network interception
+curl -X POST http://localhost:3025/network/enable-interception \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "priority": 0}'
+
+# Block image and analytics requests
+curl -X POST http://localhost:3025/network/block-requests \
+  -H "Content-Type: application/json" \
+  -d '{"patterns": [".png", ".jpg", "analytics"], "reason": "performance optimization"}'
+
+# Mock API response
+curl -X POST http://localhost:3025/network/mock-response \
+  -H "Content-Type: application/json" \
+  -d '{"urlPattern": "/api/users", "mockData": {"status": 200, "body": {"users": [{"id": 1, "name": "John"}]}}}'
+```
+
+### WebDriver BiDi (W3C Standard)
+```bash
+# Connect to WebDriver BiDi
+curl -X POST http://localhost:3025/bidi/connect \
+  -H "Content-Type: application/json"
+
+# Create browsing context
+curl -X POST http://localhost:3025/bidi/create-context \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+
+# Navigate via BiDi
+curl -X POST http://localhost:3025/bidi/navigate \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+
+# Take screenshot via BiDi
+curl -X POST http://localhost:3025/bidi/screenshot \
+  -H "Content-Type: application/json"
+
+# Evaluate script via BiDi
+curl -X POST http://localhost:3025/bidi/evaluate \
+  -H "Content-Type: application/json" \
+  -d '{"script": "return document.title;", "awaitPromise": true}'
+
+# Get real-time events
+curl http://localhost:3025/bidi/events
+```
+
+## 🏗️ Architecture
+
+```
+MCP-Tools/
+├── browser-tools-mcp/          # MCP server implementation
+│   ├── mcp-server.ts          # Main MCP server
+│   └── dist/                  # Compiled JavaScript
+├── browser-tools-server/      # HTTP API server
+│   ├── browser-connector-extended.js
+│   ├── chromium-screenshot-service.js
+│   ├── lighthouse-service.js
+│   ├── enhanced-interaction-service.js
+│   ├── javascript-execution-service.js
+│   ├── network-interception-service.js
+│   ├── webdriver-bidi-service.js
+│   └── secure-server.ts
+├── docs/                      # Documentation
+├── docker-compose.yml         # Docker configuration
+├── Dockerfile                 # Container definition
+└── start-server.sh           # Startup script
+```
+
+## 🔧 Development
+
+### Local Development
+```bash
+# Install dependencies
+npm install
+
+# Build MCP server
+cd browser-tools-mcp && npm run build
+
+# Start HTTP server
+cd ../browser-tools-server && node browser-connector-extended.js
+```
+
+### Docker Development
+```bash
+# Build and start
+docker-compose up --build
+
+# View logs
+docker-compose logs -f
+
+# Access container
+docker exec -it browser-tools-mcp-dev bash
+```
+
+## 📚 API Reference
+
+### Core Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/.identity` | GET | Server health and capabilities |
+| `/capture-screenshot` | POST | Take screenshots with advanced options |
+| `/lighthouse-audit` | POST | Comprehensive Lighthouse analysis |
+| `/analyze-performance` | POST | Performance analysis with device simulation |
+| `/test-accessibility` | POST | Accessibility testing with WCAG compliance |
+| `/analyze-seo` | POST | SEO analysis and optimization |
+| `/console-logs` | GET | Browser console logs |
+| `/network-logs` | GET | Network request/response logs |
+
+### MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `takeScreenshot` | Capture screenshots of web pages |
+| `getConsoleLogs` | Retrieve browser console logs |
+| `getConsoleErrors` | Get console error messages |
+| `getNetworkLogs` | Monitor network activity |
+| `getNetworkErrors` | Track network failures |
+| `clickElement` | Enhanced element clicking with automatic waiting |
+| `fillInput` | Smart input filling with type detection |
+| `hoverElement` | Element hovering with stability checks |
+| `scrollElement` | Element scrolling with viewport positioning |
+| `waitForElement` | Element waiting with state validation |
+| `findElementByText` | Find elements by text content |
+| `findElementByAria` | Find elements by ARIA attributes |
+| `interactWithShadowDOM` | Interact with Shadow DOM elements |
+| `fillForm` | Multi-field form automation |
+| `typeText` | Enhanced keyboard typing |
+| `mouseClick` | Precise mouse click interactions |
+| `evaluateJavaScript` | Execute JavaScript in page context |
+| `executeFunction` | Execute custom functions with arguments |
+| `executeOnElement` | Run scripts on specific elements |
+| `executeOnElements` | Run scripts on element collections |
+| `injectScript` | Inject and execute custom scripts |
+| `enableNetworkInterception` | Enable network request interception |
+| `blockRequests` | Block requests matching patterns |
+| `blockResourceTypes` | Block requests by resource type |
+| `modifyHeaders` | Modify request headers |
+| `mockResponse` | Mock API responses |
+| `throttleRequests` | Throttle request timing |
+| `getRequestLog` | Get intercepted request log |
+| `getResponseLog` | Get response log |
+| `connectBiDi` | Connect to WebDriver BiDi |
+| `createBrowsingContext` | Create browsing context via BiDi |
+| `navigateBiDi` | Navigate via BiDi |
+| `screenshotBiDi` | Take screenshot via BiDi |
+| `evaluateBiDi` | Evaluate script via BiDi |
+| `locateNodesBiDi` | Locate nodes via BiDi |
+| `getBiDiEvents` | Get BiDi events |
+
+## 🛠️ Configuration
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | 3025 | HTTP server port |
+| `ENABLE_HTTPS` | false | Enable HTTPS with self-signed certificates |
+| `CHROMIUM_PATH` | `/usr/bin/chromium` | Chromium executable path |
+| `SCREENSHOT_TIMEOUT` | 30000 | Screenshot timeout in milliseconds |
+
+### Docker Configuration
+
+The Docker setup includes:
+- **Chromium**: For browser automation
+- **Node.js**: Runtime environment
+- **OpenSSL**: Certificate generation
+- **HTTPS Support**: Self-signed certificate generation
+
+## 🚀 Enhanced Features (Inspired by Puppeteer)
+
+Our enhanced interaction system is built on modern Puppeteer patterns from the [official documentation](https://pptr.dev/guides/page-interactions):
+
+### **Advanced Locator System**
+- **Automatic Waiting**: Elements are automatically waited for with proper state validation
+- **Stability Checks**: Bounding box stability over animation frames
+- **Viewport Positioning**: Automatic scrolling to bring elements into view
+- **State Validation**: Ensures elements are visible, enabled, and ready for interaction
+
+### **Smart Selectors**
+- **Text Selectors**: `::-p-text("Submit Form")` - Find elements by text content
+- **ARIA Selectors**: `::-p-aria([name="Submit"][role="button"])` - Accessibility-first selection
+- **Shadow DOM**: `my-element >>> button` - Deep shadow DOM traversal
+- **Custom Selectors**: Framework-specific selectors (React, Vue, etc.)
+
+### **Enhanced Interactions**
+- **Smart Input Detection**: Automatically handles `<input>`, `<select>`, and custom elements
+- **Form Automation**: Multi-field form filling with validation
+- **Precise Control**: Mouse and keyboard interactions with coordinate precision
+- **Error Handling**: Comprehensive error reporting and recovery
+
+### **JavaScript Execution (Inspired by [Puppeteer JavaScript Execution Guide](https://pptr.dev/guides/javascript-execution))**
+- **Page Context Execution**: Execute JavaScript directly in the page context with full DOM access
+- **Handle Management**: Work with JSHandle and ElementHandle for complex object manipulation
+- **Function Execution**: Execute custom functions with argument passing and return value handling
+- **Element-Specific Scripts**: Run scripts on specific elements or element collections
+- **Promise Support**: Handle asynchronous operations and promises with automatic awaiting
+- **Script Injection**: Inject and execute custom scripts with full page context access
+- **Return Type Handling**: Automatic serialization of primitive types and object references
+
+### **Network Interception (Inspired by [Puppeteer Network Interception Guide](https://pptr.dev/guides/network-interception))**
+- **Request Interception**: Intercept and control every network request before it's made
+- **Cooperative Intercept Mode**: Multiple handlers working together with priority-based resolution
+- **Request Blocking**: Block requests by URL patterns, resource types, or custom criteria
+- **Header Modification**: Modify request headers for authentication, testing, or debugging
+- **Response Mocking**: Mock API responses for testing and development
+- **Request Throttling**: Simulate slow network conditions and test performance
+- **Custom Handlers**: Add custom intercept handlers with full request/response control
+- **Comprehensive Logging**: Track all requests, responses, blocked requests, and modifications
+
+### **WebDriver BiDi (W3C Standard - [Specification](https://w3c.github.io/webdriver-bidi/))**
+- **Bidirectional Communication**: Real-time two-way communication with the browser
+- **W3C Standard**: Industry-standard protocol for browser automation
+- **Browsing Context Management**: Create, navigate, and manage browser contexts
+- **Real-time Events**: Live subscription to browsing context and script events
+- **Script Execution**: Execute scripts in sandboxed realms with full context access
+- **Node Location**: Locate DOM nodes using CSS selectors with BiDi protocol
+- **Preload Scripts**: Inject scripts that run before page load
+- **Session Management**: Full session lifecycle management with proper cleanup
+- **Realm Management**: Work with JavaScript realms and execution contexts
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Model Context Protocol**: For the MCP framework
+- **Puppeteer**: For browser automation capabilities and advanced interaction patterns
+- **Lighthouse**: For web analysis and auditing
+- **W3C WebDriver BiDi**: For the bidirectional protocol specification
+- **Docker**: For containerization and deployment
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/zachshallbetter/MCP-Tools/issues)
+- **Documentation**: [Wiki](https://github.com/zachshallbetter/MCP-Tools/wiki)
+- **Discussions**: [GitHub Discussions](https://github.com/zachshallbetter/MCP-Tools/discussions)
 
 ---
 
-## 🔑 Key Additions
-
-| Audit Type         | Description                                                                                                                              |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **Accessibility**  | WCAG-compliant checks for color contrast, missing alt text, keyboard navigation traps, ARIA attributes, and more.                        |
-| **Performance**    | Lighthouse-driven analysis of render-blocking resources, excessive DOM size, unoptimized images, and other factors affecting page speed. |
-| **SEO**            | Evaluates on-page SEO factors (like metadata, headings, and link structure) and suggests improvements for better search visibility.      |
-| **Best Practices** | Checks for general best practices in web development.                                                                                    |
-| **NextJS Audit**   | Injects a prompt used to perform a NextJS audit.                                                                                         |
-| **Audit Mode**     | Runs all auditing tools in a sequence.                                                                                                   |
-| **Debugger Mode**  | Runs all debugging tools in a sequence.                                                                                                  |
-
----
-
-## 🛠️ Using Audit Tools
-
-### ✅ **Before You Start**
-
-Ensure you have:
-
-- An **active tab** in your browser
-- The **BrowserTools extension enabled**
-
-### ▶️ **Running Audits**
-
-**Headless Browser Automation**:  
- Puppeteer automates a headless Chrome instance to load the page and collect audit data, ensuring accurate results even for SPAs or content loaded via JavaScript.
-
-The headless browser instance remains active for **60 seconds** after the last audit call to efficiently handle consecutive audit requests.
-
-**Structured Results**:  
- Each audit returns results in a structured JSON format, including overall scores and detailed issue lists. This makes it easy for MCP-compatible clients to interpret the findings and present actionable insights.
-
-The MCP server provides tools to run audits on the current page. Here are example queries you can use to trigger them:
-
-#### Accessibility Audit (`runAccessibilityAudit`)
-
-Ensures the page meets accessibility standards like WCAG.
-
-> **Example Queries:**
->
-> - "Are there any accessibility issues on this page?"
-> - "Run an accessibility audit."
-> - "Check if this page meets WCAG standards."
-
-#### Performance Audit (`runPerformanceAudit`)
-
-Identifies performance bottlenecks and loading issues.
-
-> **Example Queries:**
->
-> - "Why is this page loading so slowly?"
-> - "Check the performance of this page."
-> - "Run a performance audit."
-
-#### SEO Audit (`runSEOAudit`)
-
-Evaluates how well the page is optimized for search engines.
-
-> **Example Queries:**
->
-> - "How can I improve SEO for this page?"
-> - "Run an SEO audit."
-> - "Check SEO on this page."
-
-#### Best Practices Audit (`runBestPracticesAudit`)
-
-Checks for general best practices in web development.
-
-> **Example Queries:**
->
-> - "Run a best practices audit."
-> - "Check best practices on this page."
-> - "Are there any best practices issues on this page?"
-
-#### Audit Mode (`runAuditMode`)
-
-Runs all audits in a particular sequence. Will run a NextJS audit if the framework is detected.
-
-> **Example Queries:**
->
-> - "Run audit mode."
-> - "Enter audit mode."
-
-#### NextJS Audits (`runNextJSAudit`)
-
-Checks for best practices and SEO improvements for NextJS applications
-
-> **Example Queries:**
->
-> - "Run a NextJS audit."
-> - "Run a NextJS audit, I'm using app router."
-> - "Run a NextJS audit, I'm using page router."
-
-#### Debugger Mode (`runDebuggerMode`)
-
-Runs all debugging tools in a particular sequence
-
-> **Example Queries:**
->
-> - "Enter debugger mode."
-
-## Architecture
-
-There are three core components all used to capture and analyze browser data:
-
-1. **Chrome Extension**: A browser extension that captures screenshots, console logs, network activity and DOM elements.
-2. **Node Server**: An intermediary server that facilitates communication between the Chrome extension and any instance of an MCP server.
-3. **MCP Server**: A Model Context Protocol server that provides standardized tools for AI clients to interact with the browser.
-
-```
-┌─────────────┐     ┌──────────────┐     ┌───────────────┐     ┌─────────────┐
-│  MCP Client │ ──► │  MCP Server  │ ──► │  Node Server  │ ──► │   Chrome    │
-│  (e.g.      │ ◄── │  (Protocol   │ ◄── │ (Middleware)  │ ◄── │  Extension  │
-│   Cursor)   │     │   Handler)   │     │               │     │             │
-└─────────────┘     └──────────────┘     └───────────────┘     └─────────────┘
-```
-
-Model Context Protocol (MCP) is a capability supported by Anthropic AI models that
-allow you to create custom tools for any compatible client. MCP clients like Claude
-Desktop, Cursor, Cline or Zed can run an MCP server which "teaches" these clients
-about a new tool that they can use.
-
-These tools can call out to external APIs but in our case, **all logs are stored locally** on your machine and NEVER sent out to any third-party service or API. BrowserTools MCP runs a local instance of a NodeJS API server which communicates with the BrowserTools Chrome Extension.
-
-All consumers of the BrowserTools MCP Server interface with the same NodeJS API and Chrome extension.
-
-#### Chrome Extension
-
-- Monitors XHR requests/responses and console logs
-- Tracks selected DOM elements
-- Sends all logs and current element to the BrowserTools Connector
-- Connects to Websocket server to capture/send screenshots
-- Allows user to configure token/truncation limits + screenshot folder path
-
-#### Node Server
-
-- Acts as middleware between the Chrome extension and MCP server
-- Receives logs and currently selected element from Chrome extension
-- Processes requests from MCP server to capture logs, screenshot or current element
-- Sends Websocket command to the Chrome extension for capturing a screenshot
-- Intelligently truncates strings and # of duplicate objects in logs to avoid token limits
-- Removes cookies and sensitive headers to avoid sending to LLMs in MCP clients
-
-#### MCP Server
-
-- Implements the Model Context Protocol
-- Provides standardized tools for AI clients
-- Compatible with various MCP clients (Cursor, Cline, Zed, Claude Desktop, etc.)
-
-## Installation
-
-Installation steps can be found in our documentation:
-
-- [BrowserTools MCP Docs](https://browsertools.agentdesk.ai/)
-
-## Usage
-
-Once installed and configured, the system allows any compatible MCP client to:
-
-- Monitor browser console output
-- Capture network traffic
-- Take screenshots
-- Analyze selected elements
-- Wipe logs stored in our MCP server
-- Run accessibility, performance, SEO, and best practices audits
-
-## Compatibility
-
-- Works with any MCP-compatible client
-- Primarily designed for Cursor IDE integration
-- Supports other AI editors and MCP clients
+**Built with ❤️ for the MCP community**
