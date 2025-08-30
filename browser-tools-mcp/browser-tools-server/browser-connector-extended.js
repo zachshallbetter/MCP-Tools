@@ -7,6 +7,7 @@ import { chromiumScreenshotService } from './chromium-screenshot-service.js';
 import { lighthouseService } from './lighthouse-service.js';
 import { EnhancedInteractionService } from './enhanced-interaction-service.js';
 import { JavaScriptExecutionService } from './javascript-execution-service.js';
+import { NetworkInterceptionService } from './network-interception-service.js';
 import fs from 'fs';
 import path from 'path';
 import http from 'http';
@@ -18,6 +19,7 @@ class ExtendedBrowserConnector {
     this.server = http.createServer(this.app);
     this.enhancedInteractionService = new EnhancedInteractionService();
     this.javascriptExecutionService = new JavaScriptExecutionService();
+    this.networkInterceptionService = new NetworkInterceptionService();
     this.setupMiddleware();
     this.setupRoutes();
   }
@@ -676,6 +678,208 @@ class ExtendedBrowserConnector {
       }
     });
 
+    // Network Interception Endpoints
+    this.app.post('/network/enable-interception', async (req, res) => {
+      try {
+        const { url, priority = 0 } = req.body;
+        
+        console.log(`🔒 Enabling network interception${url ? ` for ${url}` : ''}`);
+        const result = await this.networkInterceptionService.enableInterception(url);
+        if (priority !== 0) {
+          this.networkInterceptionService.setInterceptResolutionConfig(priority);
+        }
+        res.json(result);
+      } catch (error) {
+        console.error('Enable interception error:', error);
+        res.status(500).json({ error: `Enable interception failed: ${error}` });
+      }
+    });
+
+    this.app.post('/network/disable-interception', async (req, res) => {
+      try {
+        console.log('🔓 Disabling network interception');
+        const result = await this.networkInterceptionService.disableInterception();
+        res.json(result);
+      } catch (error) {
+        console.error('Disable interception error:', error);
+        res.status(500).json({ error: `Disable interception failed: ${error}` });
+      }
+    });
+
+    this.app.post('/network/block-requests', async (req, res) => {
+      try {
+        const { patterns, reason = 'blocked' } = req.body;
+        
+        if (!patterns || !Array.isArray(patterns)) {
+          return res.status(400).json({ error: 'Patterns array is required' });
+        }
+
+        console.log(`🚫 Blocking requests matching patterns: ${patterns.join(', ')}`);
+        const result = await this.networkInterceptionService.blockRequests(patterns, reason);
+        res.json(result);
+      } catch (error) {
+        console.error('Block requests error:', error);
+        res.status(500).json({ error: `Block requests failed: ${error}` });
+      }
+    });
+
+    this.app.post('/network/block-resource-types', async (req, res) => {
+      try {
+        const { resourceTypes, reason = 'resource type blocked' } = req.body;
+        
+        if (!resourceTypes || !Array.isArray(resourceTypes)) {
+          return res.status(400).json({ error: 'Resource types array is required' });
+        }
+
+        console.log(`🚫 Blocking resource types: ${resourceTypes.join(', ')}`);
+        const result = await this.networkInterceptionService.blockResourceTypes(resourceTypes, reason);
+        res.json(result);
+      } catch (error) {
+        console.error('Block resource types error:', error);
+        res.status(500).json({ error: `Block resource types failed: ${error}` });
+      }
+    });
+
+    this.app.post('/network/modify-headers', async (req, res) => {
+      try {
+        const { urlPattern, headerModifications } = req.body;
+        
+        if (!urlPattern || !headerModifications) {
+          return res.status(400).json({ error: 'URL pattern and header modifications are required' });
+        }
+
+        console.log(`🔧 Modifying headers for pattern: ${urlPattern}`);
+        const result = await this.networkInterceptionService.modifyHeaders(urlPattern, headerModifications);
+        res.json(result);
+      } catch (error) {
+        console.error('Modify headers error:', error);
+        res.status(500).json({ error: `Modify headers failed: ${error}` });
+      }
+    });
+
+    this.app.post('/network/mock-response', async (req, res) => {
+      try {
+        const { urlPattern, mockData } = req.body;
+        
+        if (!urlPattern || !mockData) {
+          return res.status(400).json({ error: 'URL pattern and mock data are required' });
+        }
+
+        console.log(`🎭 Mocking response for pattern: ${urlPattern}`);
+        const result = await this.networkInterceptionService.mockResponse(urlPattern, mockData);
+        res.json(result);
+      } catch (error) {
+        console.error('Mock response error:', error);
+        res.status(500).json({ error: `Mock response failed: ${error}` });
+      }
+    });
+
+    this.app.post('/network/throttle-requests', async (req, res) => {
+      try {
+        const { urlPattern, delay = 1000 } = req.body;
+        
+        if (!urlPattern) {
+          return res.status(400).json({ error: 'URL pattern is required' });
+        }
+
+        console.log(`⏱️ Throttling requests for pattern: ${urlPattern} (${delay}ms delay)`);
+        const result = await this.networkInterceptionService.throttleRequests(urlPattern, delay);
+        res.json(result);
+      } catch (error) {
+        console.error('Throttle requests error:', error);
+        res.status(500).json({ error: `Throttle requests failed: ${error}` });
+      }
+    });
+
+    this.app.post('/network/add-handler', async (req, res) => {
+      try {
+        const { id, handler } = req.body;
+        
+        if (!id || !handler) {
+          return res.status(400).json({ error: 'Handler ID and handler function are required' });
+        }
+
+        console.log(`📝 Adding custom intercept handler: ${id}`);
+        const result = this.networkInterceptionService.addInterceptHandler(id, new Function('interceptedRequest', 'requestData', handler));
+        res.json(result);
+      } catch (error) {
+        console.error('Add handler error:', error);
+        res.status(500).json({ error: `Add handler failed: ${error}` });
+      }
+    });
+
+    this.app.post('/network/remove-handler', async (req, res) => {
+      try {
+        const { id } = req.body;
+        
+        if (!id) {
+          return res.status(400).json({ error: 'Handler ID is required' });
+        }
+
+        console.log(`🗑️ Removing intercept handler: ${id}`);
+        const result = this.networkInterceptionService.removeInterceptHandler(id);
+        res.json(result);
+      } catch (error) {
+        console.error('Remove handler error:', error);
+        res.status(500).json({ error: `Remove handler failed: ${error}` });
+      }
+    });
+
+    this.app.get('/network/request-log', async (req, res) => {
+      try {
+        console.log('📊 Getting request log');
+        const result = this.networkInterceptionService.getRequestLog();
+        res.json(result);
+      } catch (error) {
+        console.error('Get request log error:', error);
+        res.status(500).json({ error: `Get request log failed: ${error}` });
+      }
+    });
+
+    this.app.get('/network/response-log', async (req, res) => {
+      try {
+        console.log('📊 Getting response log');
+        const result = this.networkInterceptionService.getResponseLog();
+        res.json(result);
+      } catch (error) {
+        console.error('Get response log error:', error);
+        res.status(500).json({ error: `Get response log failed: ${error}` });
+      }
+    });
+
+    this.app.get('/network/blocked-requests', async (req, res) => {
+      try {
+        console.log('🚫 Getting blocked requests');
+        const result = this.networkInterceptionService.getBlockedRequests();
+        res.json(result);
+      } catch (error) {
+        console.error('Get blocked requests error:', error);
+        res.status(500).json({ error: `Get blocked requests failed: ${error}` });
+      }
+    });
+
+    this.app.get('/network/modified-requests', async (req, res) => {
+      try {
+        console.log('🔧 Getting modified requests');
+        const result = this.networkInterceptionService.getModifiedRequests();
+        res.json(result);
+      } catch (error) {
+        console.error('Get modified requests error:', error);
+        res.status(500).json({ error: `Get modified requests failed: ${error}` });
+      }
+    });
+
+    this.app.post('/network/clear-logs', async (req, res) => {
+      try {
+        console.log('🧹 Clearing network logs');
+        const result = this.networkInterceptionService.clearLogs();
+        res.json(result);
+      } catch (error) {
+        console.error('Clear logs error:', error);
+        res.status(500).json({ error: `Clear logs failed: ${error}` });
+      }
+    });
+
     // API Documentation
     this.app.get('/api', (req, res) => {
       res.json({
@@ -711,6 +915,20 @@ class ExtendedBrowserConnector {
           'POST /js/execute-on-element': 'Execute script on specific element',
           'POST /js/execute-on-elements': 'Execute script on multiple elements',
           'POST /js/inject-script': 'Inject and execute custom script',
+          'POST /network/enable-interception': 'Enable network request interception',
+          'POST /network/disable-interception': 'Disable network request interception',
+          'POST /network/block-requests': 'Block requests matching patterns',
+          'POST /network/block-resource-types': 'Block requests by resource type',
+          'POST /network/modify-headers': 'Modify request headers',
+          'POST /network/mock-response': 'Mock API responses',
+          'POST /network/throttle-requests': 'Throttle request timing',
+          'POST /network/add-handler': 'Add custom intercept handler',
+          'POST /network/remove-handler': 'Remove intercept handler',
+          'GET /network/request-log': 'Get intercepted request log',
+          'GET /network/response-log': 'Get response log',
+          'GET /network/blocked-requests': 'Get blocked requests log',
+          'GET /network/modified-requests': 'Get modified requests log',
+          'POST /network/clear-logs': 'Clear all network logs',
           'POST /interact/scroll': 'Enhanced element scrolling with viewport positioning',
           'POST /interact/wait': 'Enhanced element waiting with state validation',
           'POST /interact/text-selector': 'Find and interact with elements by text content',
@@ -824,6 +1042,43 @@ class ExtendedBrowserConnector {
             injectScript: {
               script: 'window.customData = { timestamp: Date.now(), userAgent: navigator.userAgent }; return window.customData;',
               url: 'https://example.com'
+            }
+          },
+          networkInterception: {
+            enableInterception: {
+              url: 'https://example.com',
+              priority: 0
+            },
+            blockRequests: {
+              patterns: ['.png', '.jpg', 'analytics'],
+              reason: 'performance optimization'
+            },
+            blockResourceTypes: {
+              resourceTypes: ['image', 'stylesheet', 'font'],
+              reason: 'reduce bandwidth'
+            },
+            modifyHeaders: {
+              urlPattern: 'api.example.com',
+              headerModifications: {
+                'Authorization': 'Bearer token123',
+                'X-Custom-Header': 'value'
+              }
+            },
+            mockResponse: {
+              urlPattern: '/api/users',
+              mockData: {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+                body: { users: [{ id: 1, name: 'John' }] }
+              }
+            },
+            throttleRequests: {
+              urlPattern: 'api.example.com',
+              delay: 2000
+            },
+            addHandler: {
+              id: 'custom-handler',
+              handler: 'if (requestData.url.includes("blocked")) return { action: "abort", reason: "custom" }; return null;'
             }
           }
         }

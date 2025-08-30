@@ -26,6 +26,8 @@ A powerful collection of Model Context Protocol (MCP) tools for browser automati
 - **JavaScript Execution**: Execute JavaScript in page context with full DOM access
 - **Element Script Execution**: Run scripts on specific elements or element collections
 - **Script Injection**: Inject and execute custom scripts with page context access
+- **Network Interception**: Intercept, block, modify, and mock network requests
+- **Request/Response Monitoring**: Real-time network traffic analysis
 - **Responsive Testing**: Cross-device compatibility validation
 
 ### 🐳 **Docker Integration**
@@ -156,6 +158,44 @@ curl -X POST http://localhost:3025/js/execute-on-elements \
 curl -X POST http://localhost:3025/js/inject-script \
   -H "Content-Type: application/json" \
   -d '{"script": "window.customData = { timestamp: Date.now() }; return window.customData;", "url": "https://example.com"}'
+```
+
+### Network Interception
+```bash
+# Enable network interception
+curl -X POST http://localhost:3025/network/enable-interception \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "priority": 0}'
+
+# Block image and analytics requests
+curl -X POST http://localhost:3025/network/block-requests \
+  -H "Content-Type: application/json" \
+  -d '{"patterns": [".png", ".jpg", "analytics"], "reason": "performance optimization"}'
+
+# Block resource types
+curl -X POST http://localhost:3025/network/block-resource-types \
+  -H "Content-Type: application/json" \
+  -d '{"resourceTypes": ["image", "stylesheet"], "reason": "reduce bandwidth"}'
+
+# Modify headers for API requests
+curl -X POST http://localhost:3025/network/modify-headers \
+  -H "Content-Type: application/json" \
+  -d '{"urlPattern": "api.example.com", "headerModifications": {"Authorization": "Bearer token123"}}'
+
+# Mock API response
+curl -X POST http://localhost:3025/network/mock-response \
+  -H "Content-Type: application/json" \
+  -d '{"urlPattern": "/api/users", "mockData": {"status": 200, "body": {"users": [{"id": 1, "name": "John"}]}}}'
+
+# Throttle requests
+curl -X POST http://localhost:3025/network/throttle-requests \
+  -H "Content-Type: application/json" \
+  -d '{"urlPattern": "api.example.com", "delay": 2000}'
+
+# Get network logs
+curl http://localhost:3025/network/request-log
+curl http://localhost:3025/network/blocked-requests
+```
 
 ## 🏗️ Architecture
 
@@ -241,6 +281,14 @@ docker exec -it browser-tools-mcp-dev bash
 | `executeOnElement` | Run scripts on specific elements |
 | `executeOnElements` | Run scripts on element collections |
 | `injectScript` | Inject and execute custom scripts |
+| `enableNetworkInterception` | Enable network request interception |
+| `blockRequests` | Block requests matching patterns |
+| `blockResourceTypes` | Block requests by resource type |
+| `modifyHeaders` | Modify request headers |
+| `mockResponse` | Mock API responses |
+| `throttleRequests` | Throttle request timing |
+| `getRequestLog` | Get intercepted request log |
+| `getResponseLog` | Get response log |
 
 ## 🛠️ Configuration
 
@@ -303,6 +351,16 @@ Our enhanced interaction system is built on modern Puppeteer patterns from the [
 - **Promise Support**: Handle asynchronous operations and promises with automatic awaiting
 - **Script Injection**: Inject and execute custom scripts with full page context access
 - **Return Type Handling**: Automatic serialization of primitive types and object references
+
+### **Network Interception (Inspired by [Puppeteer Network Interception Guide](https://pptr.dev/guides/network-interception))**
+- **Request Interception**: Intercept and control every network request before it's made
+- **Cooperative Intercept Mode**: Multiple handlers working together with priority-based resolution
+- **Request Blocking**: Block requests by URL patterns, resource types, or custom criteria
+- **Header Modification**: Modify request headers for authentication, testing, or debugging
+- **Response Mocking**: Mock API responses for testing and development
+- **Request Throttling**: Simulate slow network conditions and test performance
+- **Custom Handlers**: Add custom intercept handlers with full request/response control
+- **Comprehensive Logging**: Track all requests, responses, blocked requests, and modifications
 
 ## 🙏 Acknowledgments
 
