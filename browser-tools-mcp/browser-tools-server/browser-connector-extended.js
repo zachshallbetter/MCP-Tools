@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import { chromiumScreenshotService } from './chromium-screenshot-service.js';
 import { lighthouseService } from './lighthouse-service.js';
 import { EnhancedInteractionService } from './enhanced-interaction-service.js';
+import { JavaScriptExecutionService } from './javascript-execution-service.js';
 import fs from 'fs';
 import path from 'path';
 import http from 'http';
@@ -16,6 +17,7 @@ class ExtendedBrowserConnector {
     this.app = express();
     this.server = http.createServer(this.app);
     this.enhancedInteractionService = new EnhancedInteractionService();
+    this.javascriptExecutionService = new JavaScriptExecutionService();
     this.setupMiddleware();
     this.setupRoutes();
   }
@@ -520,6 +522,160 @@ class ExtendedBrowserConnector {
       }
     });
 
+    // JavaScript Execution Endpoints
+    this.app.post('/js/evaluate', async (req, res) => {
+      try {
+        const { script, args = [], url } = req.body;
+        
+        if (!script) {
+          return res.status(400).json({ error: 'Script is required' });
+        }
+
+        console.log(`🔍 JavaScript evaluation: ${script.substring(0, 100)}...`);
+        const result = await this.javascriptExecutionService.evaluate(script, ...args);
+        res.json(result);
+      } catch (error) {
+        console.error('JavaScript evaluation error:', error);
+        res.status(500).json({ error: `JavaScript evaluation failed: ${error}` });
+      }
+    });
+
+    this.app.post('/js/evaluate-handle', async (req, res) => {
+      try {
+        const { script, args = [] } = req.body;
+        
+        if (!script) {
+          return res.status(400).json({ error: 'Script is required' });
+        }
+
+        console.log(`🔗 JavaScript handle evaluation: ${script.substring(0, 100)}...`);
+        const result = await this.javascriptExecutionService.evaluateHandle(script, ...args);
+        res.json(result);
+      } catch (error) {
+        console.error('JavaScript handle evaluation error:', error);
+        res.status(500).json({ error: `JavaScript handle evaluation failed: ${error}` });
+      }
+    });
+
+    this.app.post('/js/execute-function', async (req, res) => {
+      try {
+        const { functionBody, args = [] } = req.body;
+        
+        if (!functionBody) {
+          return res.status(400).json({ error: 'Function body is required' });
+        }
+
+        console.log(`⚡ Function execution: ${functionBody.substring(0, 100)}...`);
+        const result = await this.javascriptExecutionService.executeFunction(functionBody, ...args);
+        res.json(result);
+      } catch (error) {
+        console.error('Function execution error:', error);
+        res.status(500).json({ error: `Function execution failed: ${error}` });
+      }
+    });
+
+    this.app.post('/js/execute-dom', async (req, res) => {
+      try {
+        const { script, url } = req.body;
+        
+        if (!script) {
+          return res.status(400).json({ error: 'Script is required' });
+        }
+
+        console.log(`🎯 DOM script execution: ${script.substring(0, 100)}...`);
+        const result = await this.javascriptExecutionService.executeWithDOM(script, url);
+        res.json(result);
+      } catch (error) {
+        console.error('DOM script execution error:', error);
+        res.status(500).json({ error: `DOM script execution failed: ${error}` });
+      }
+    });
+
+    this.app.post('/js/execute-promise', async (req, res) => {
+      try {
+        const { script, timeout = 30000 } = req.body;
+        
+        if (!script) {
+          return res.status(400).json({ error: 'Script is required' });
+        }
+
+        console.log(`⏱️ Promise script execution: ${script.substring(0, 100)}...`);
+        const result = await this.javascriptExecutionService.executePromise(script, timeout);
+        res.json(result);
+      } catch (error) {
+        console.error('Promise script execution error:', error);
+        res.status(500).json({ error: `Promise script execution failed: ${error}` });
+      }
+    });
+
+    this.app.post('/js/element-handle', async (req, res) => {
+      try {
+        const { selector } = req.body;
+        
+        if (!selector) {
+          return res.status(400).json({ error: 'Selector is required' });
+        }
+
+        console.log(`🎯 Getting element handle: ${selector}`);
+        const result = await this.javascriptExecutionService.getElementHandle(selector);
+        res.json(result);
+      } catch (error) {
+        console.error('Element handle error:', error);
+        res.status(500).json({ error: `Element handle failed: ${error}` });
+      }
+    });
+
+    this.app.post('/js/execute-on-element', async (req, res) => {
+      try {
+        const { selector, script, args = [] } = req.body;
+        
+        if (!selector || !script) {
+          return res.status(400).json({ error: 'Selector and script are required' });
+        }
+
+        console.log(`🎯 Element script execution: ${selector}`);
+        const result = await this.javascriptExecutionService.executeOnElement(selector, script, ...args);
+        res.json(result);
+      } catch (error) {
+        console.error('Element script execution error:', error);
+        res.status(500).json({ error: `Element script execution failed: ${error}` });
+      }
+    });
+
+    this.app.post('/js/execute-on-elements', async (req, res) => {
+      try {
+        const { selector, script, args = [] } = req.body;
+        
+        if (!selector || !script) {
+          return res.status(400).json({ error: 'Selector and script are required' });
+        }
+
+        console.log(`🎯 Elements script execution: ${selector}`);
+        const result = await this.javascriptExecutionService.executeOnElements(selector, script, ...args);
+        res.json(result);
+      } catch (error) {
+        console.error('Elements script execution error:', error);
+        res.status(500).json({ error: `Elements script execution failed: ${error}` });
+      }
+    });
+
+    this.app.post('/js/inject-script', async (req, res) => {
+      try {
+        const { script, url } = req.body;
+        
+        if (!script) {
+          return res.status(400).json({ error: 'Script is required' });
+        }
+
+        console.log(`💉 Script injection: ${script.substring(0, 100)}...`);
+        const result = await this.javascriptExecutionService.injectScript(script, url);
+        res.json(result);
+      } catch (error) {
+        console.error('Script injection error:', error);
+        res.status(500).json({ error: `Script injection failed: ${error}` });
+      }
+    });
+
     // API Documentation
     this.app.get('/api', (req, res) => {
       res.json({
@@ -546,6 +702,15 @@ class ExtendedBrowserConnector {
           'POST /interact/click': 'Enhanced element click with automatic waiting',
           'POST /interact/fill': 'Enhanced input filling with smart detection',
           'POST /interact/hover': 'Enhanced element hover with stability checks',
+          'POST /js/evaluate': 'Execute JavaScript in page context',
+          'POST /js/evaluate-handle': 'Execute JavaScript and return handle',
+          'POST /js/execute-function': 'Execute function with arguments',
+          'POST /js/execute-dom': 'Execute DOM-related JavaScript',
+          'POST /js/execute-promise': 'Execute promise-based JavaScript',
+          'POST /js/element-handle': 'Get element handle by selector',
+          'POST /js/execute-on-element': 'Execute script on specific element',
+          'POST /js/execute-on-elements': 'Execute script on multiple elements',
+          'POST /js/inject-script': 'Inject and execute custom script',
           'POST /interact/scroll': 'Enhanced element scrolling with viewport positioning',
           'POST /interact/wait': 'Enhanced element waiting with state validation',
           'POST /interact/text-selector': 'Find and interact with elements by text content',
@@ -620,6 +785,45 @@ class ExtendedBrowserConnector {
               y: 300,
               url: 'https://example.com',
               options: { button: 'left', clickCount: 1 }
+            }
+          },
+          javascriptExecution: {
+            evaluate: {
+              script: 'return document.title;',
+              args: []
+            },
+            evaluateHandle: {
+              script: 'return document.body;',
+              args: []
+            },
+            executeFunction: {
+              functionBody: 'return arg0 + arg1;',
+              args: [5, 10]
+            },
+            executeDOM: {
+              script: 'return { title: document.title, url: window.location.href, elements: document.querySelectorAll("*").length };',
+              url: 'https://example.com'
+            },
+            executePromise: {
+              script: 'return new Promise(resolve => setTimeout(() => resolve("Delayed result"), 1000));',
+              timeout: 5000
+            },
+            elementHandle: {
+              selector: 'button[type="submit"]'
+            },
+            executeOnElement: {
+              selector: 'input[name="email"]',
+              script: 'return this.value;',
+              args: []
+            },
+            executeOnElements: {
+              selector: 'a',
+              script: 'return Array.from(this).map(el => ({ text: el.textContent, href: el.href }));',
+              args: []
+            },
+            injectScript: {
+              script: 'window.customData = { timestamp: Date.now(), userAgent: navigator.userAgent }; return window.customData;',
+              url: 'https://example.com'
             }
           }
         }

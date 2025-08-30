@@ -23,6 +23,9 @@ A powerful collection of Model Context Protocol (MCP) tools for browser automati
 - **Advanced Selectors**: Text, ARIA, and Shadow DOM selectors
 - **Form Automation**: Multi-field form filling with validation
 - **Keyboard & Mouse Control**: Precise input and click interactions
+- **JavaScript Execution**: Execute JavaScript in page context with full DOM access
+- **Element Script Execution**: Run scripts on specific elements or element collections
+- **Script Injection**: Inject and execute custom scripts with page context access
 - **Responsive Testing**: Cross-device compatibility validation
 
 ### 🐳 **Docker Integration**
@@ -127,6 +130,33 @@ curl -X POST http://localhost:3025/interact/fill-form \
   -d '{"formData": {"input[name=\"username\"]": "testuser", "input[name=\"password\"]": "password123"}}'
 ```
 
+### JavaScript Execution
+```bash
+# Execute JavaScript in page context
+curl -X POST http://localhost:3025/js/evaluate \
+  -H "Content-Type: application/json" \
+  -d '{"script": "return document.title;", "url": "https://example.com"}'
+
+# Execute function with arguments
+curl -X POST http://localhost:3025/js/execute-function \
+  -H "Content-Type: application/json" \
+  -d '{"functionBody": "return arg0 + arg1;", "args": [5, 10]}'
+
+# Execute script on specific element
+curl -X POST http://localhost:3025/js/execute-on-element \
+  -H "Content-Type: application/json" \
+  -d '{"selector": "input[name=\"email\"]", "script": "return this.value;"}'
+
+# Execute script on multiple elements
+curl -X POST http://localhost:3025/js/execute-on-elements \
+  -H "Content-Type: application/json" \
+  -d '{"selector": "a", "script": "return Array.from(this).map(el => ({ text: el.textContent, href: el.href }));"}'
+
+# Inject custom script
+curl -X POST http://localhost:3025/js/inject-script \
+  -H "Content-Type: application/json" \
+  -d '{"script": "window.customData = { timestamp: Date.now() }; return window.customData;", "url": "https://example.com"}'
+
 ## 🏗️ Architecture
 
 ```
@@ -206,6 +236,11 @@ docker exec -it browser-tools-mcp-dev bash
 | `fillForm` | Multi-field form automation |
 | `typeText` | Enhanced keyboard typing |
 | `mouseClick` | Precise mouse click interactions |
+| `evaluateJavaScript` | Execute JavaScript in page context |
+| `executeFunction` | Execute custom functions with arguments |
+| `executeOnElement` | Run scripts on specific elements |
+| `executeOnElements` | Run scripts on element collections |
+| `injectScript` | Inject and execute custom scripts |
 
 ## 🛠️ Configuration
 
@@ -259,6 +294,15 @@ Our enhanced interaction system is built on modern Puppeteer patterns from the [
 - **Form Automation**: Multi-field form filling with validation
 - **Precise Control**: Mouse and keyboard interactions with coordinate precision
 - **Error Handling**: Comprehensive error reporting and recovery
+
+### **JavaScript Execution (Inspired by [Puppeteer JavaScript Execution Guide](https://pptr.dev/guides/javascript-execution))**
+- **Page Context Execution**: Execute JavaScript directly in the page context with full DOM access
+- **Handle Management**: Work with JSHandle and ElementHandle for complex object manipulation
+- **Function Execution**: Execute custom functions with argument passing and return value handling
+- **Element-Specific Scripts**: Run scripts on specific elements or element collections
+- **Promise Support**: Handle asynchronous operations and promises with automatic awaiting
+- **Script Injection**: Inject and execute custom scripts with full page context access
+- **Return Type Handling**: Automatic serialization of primitive types and object references
 
 ## 🙏 Acknowledgments
 
