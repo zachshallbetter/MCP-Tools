@@ -8,6 +8,7 @@ import { lighthouseService } from './lighthouse-service.js';
 import { EnhancedInteractionService } from './enhanced-interaction-service.js';
 import { JavaScriptExecutionService } from './javascript-execution-service.js';
 import { NetworkInterceptionService } from './network-interception-service.js';
+import { WebDriverBiDiService } from './webdriver-bidi-service.js';
 import fs from 'fs';
 import path from 'path';
 import http from 'http';
@@ -20,6 +21,7 @@ class ExtendedBrowserConnector {
     this.enhancedInteractionService = new EnhancedInteractionService();
     this.javascriptExecutionService = new JavaScriptExecutionService();
     this.networkInterceptionService = new NetworkInterceptionService();
+    this.webDriverBiDiService = new WebDriverBiDiService();
     this.setupMiddleware();
     this.setupRoutes();
   }
@@ -880,6 +882,195 @@ class ExtendedBrowserConnector {
       }
     });
 
+    // WebDriver BiDi Endpoints
+    this.app.post('/bidi/connect', async (req, res) => {
+      try {
+        console.log('🔗 Connecting to WebDriver BiDi...');
+        const result = await this.webDriverBiDiService.initialize();
+        res.json(result);
+      } catch (error) {
+        console.error('BiDi connect error:', error);
+        res.status(500).json({ error: `BiDi connect failed: ${error}` });
+      }
+    });
+
+    this.app.post('/bidi/create-context', async (req, res) => {
+      try {
+        const { url } = req.body;
+        
+        console.log('🌐 Creating browsing context via BiDi...');
+        const result = await this.webDriverBiDiService.createBrowsingContext(url);
+        res.json(result);
+      } catch (error) {
+        console.error('Create context error:', error);
+        res.status(500).json({ error: `Create context failed: ${error}` });
+      }
+    });
+
+    this.app.post('/bidi/navigate', async (req, res) => {
+      try {
+        const { url } = req.body;
+        
+        if (!url) {
+          return res.status(400).json({ error: 'URL is required' });
+        }
+
+        console.log(`🧭 Navigating via BiDi: ${url}`);
+        const result = await this.webDriverBiDiService.navigateTo(url);
+        res.json(result);
+      } catch (error) {
+        console.error('Navigate error:', error);
+        res.status(500).json({ error: `Navigate failed: ${error}` });
+      }
+    });
+
+    this.app.post('/bidi/screenshot', async (req, res) => {
+      try {
+        console.log('📸 Taking screenshot via BiDi...');
+        const result = await this.webDriverBiDiService.captureScreenshot();
+        res.json(result);
+      } catch (error) {
+        console.error('Screenshot error:', error);
+        res.status(500).json({ error: `Screenshot failed: ${error}` });
+      }
+    });
+
+    this.app.post('/bidi/evaluate', async (req, res) => {
+      try {
+        const { script, awaitPromise = true } = req.body;
+        
+        if (!script) {
+          return res.status(400).json({ error: 'Script is required' });
+        }
+
+        console.log(`🔍 Evaluating script via BiDi: ${script.substring(0, 100)}...`);
+        const result = await this.webDriverBiDiService.evaluateScript(script, awaitPromise);
+        res.json(result);
+      } catch (error) {
+        console.error('Evaluate error:', error);
+        res.status(500).json({ error: `Evaluate failed: ${error}` });
+      }
+    });
+
+    this.app.post('/bidi/add-preload-script', async (req, res) => {
+      try {
+        const { script } = req.body;
+        
+        if (!script) {
+          return res.status(400).json({ error: 'Script is required' });
+        }
+
+        console.log('📜 Adding preload script via BiDi...');
+        const result = await this.webDriverBiDiService.addPreloadScript(script);
+        res.json(result);
+      } catch (error) {
+        console.error('Add preload script error:', error);
+        res.status(500).json({ error: `Add preload script failed: ${error}` });
+      }
+    });
+
+    this.app.post('/bidi/locate-nodes', async (req, res) => {
+      try {
+        const { selector, maxNodeCount = 100 } = req.body;
+        
+        if (!selector) {
+          return res.status(400).json({ error: 'Selector is required' });
+        }
+
+        console.log(`🎯 Locating nodes via BiDi: ${selector}`);
+        const result = await this.webDriverBiDiService.locateNodes(selector, maxNodeCount);
+        res.json(result);
+      } catch (error) {
+        console.error('Locate nodes error:', error);
+        res.status(500).json({ error: `Locate nodes failed: ${error}` });
+      }
+    });
+
+    this.app.get('/bidi/get-tree', async (req, res) => {
+      try {
+        console.log('🌳 Getting browsing context tree via BiDi...');
+        const result = await this.webDriverBiDiService.getTree();
+        res.json(result);
+      } catch (error) {
+        console.error('Get tree error:', error);
+        res.status(500).json({ error: `Get tree failed: ${error}` });
+      }
+    });
+
+    this.app.get('/bidi/get-realms', async (req, res) => {
+      try {
+        console.log('🏰 Getting realms via BiDi...');
+        const result = await this.webDriverBiDiService.getRealms();
+        res.json(result);
+      } catch (error) {
+        console.error('Get realms error:', error);
+        res.status(500).json({ error: `Get realms failed: ${error}` });
+      }
+    });
+
+    this.app.post('/bidi/set-viewport', async (req, res) => {
+      try {
+        const { width, height } = req.body;
+        
+        if (!width || !height) {
+          return res.status(400).json({ error: 'Width and height are required' });
+        }
+
+        console.log(`📐 Setting viewport via BiDi: ${width}x${height}`);
+        const result = await this.webDriverBiDiService.setViewport(width, height);
+        res.json(result);
+      } catch (error) {
+        console.error('Set viewport error:', error);
+        res.status(500).json({ error: `Set viewport failed: ${error}` });
+      }
+    });
+
+    this.app.post('/bidi/close-context', async (req, res) => {
+      try {
+        console.log('🔒 Closing browsing context via BiDi...');
+        const result = await this.webDriverBiDiService.closeContext();
+        res.json(result);
+      } catch (error) {
+        console.error('Close context error:', error);
+        res.status(500).json({ error: `Close context failed: ${error}` });
+      }
+    });
+
+    this.app.post('/bidi/end-session', async (req, res) => {
+      try {
+        console.log('🔚 Ending BiDi session...');
+        const result = await this.webDriverBiDiService.endSession();
+        res.json(result);
+      } catch (error) {
+        console.error('End session error:', error);
+        res.status(500).json({ error: `End session failed: ${error}` });
+      }
+    });
+
+    this.app.get('/bidi/events', async (req, res) => {
+      try {
+        const { method } = req.query;
+        
+        console.log(`📨 Getting BiDi events${method ? ` for ${method}` : ''}`);
+        const result = this.webDriverBiDiService.getEvents(method);
+        res.json(result);
+      } catch (error) {
+        console.error('Get events error:', error);
+        res.status(500).json({ error: `Get events failed: ${error}` });
+      }
+    });
+
+    this.app.post('/bidi/clear-events', async (req, res) => {
+      try {
+        console.log('🧹 Clearing BiDi events...');
+        const result = this.webDriverBiDiService.clearEvents();
+        res.json(result);
+      } catch (error) {
+        console.error('Clear events error:', error);
+        res.status(500).json({ error: `Clear events failed: ${error}` });
+      }
+    });
+
     // API Documentation
     this.app.get('/api', (req, res) => {
       res.json({
@@ -929,6 +1120,20 @@ class ExtendedBrowserConnector {
           'GET /network/blocked-requests': 'Get blocked requests log',
           'GET /network/modified-requests': 'Get modified requests log',
           'POST /network/clear-logs': 'Clear all network logs',
+          'POST /bidi/connect': 'Connect to WebDriver BiDi',
+          'POST /bidi/create-context': 'Create browsing context via BiDi',
+          'POST /bidi/navigate': 'Navigate via BiDi',
+          'POST /bidi/screenshot': 'Take screenshot via BiDi',
+          'POST /bidi/evaluate': 'Evaluate script via BiDi',
+          'POST /bidi/add-preload-script': 'Add preload script via BiDi',
+          'POST /bidi/locate-nodes': 'Locate nodes via BiDi',
+          'GET /bidi/get-tree': 'Get browsing context tree via BiDi',
+          'GET /bidi/get-realms': 'Get realms via BiDi',
+          'POST /bidi/set-viewport': 'Set viewport via BiDi',
+          'POST /bidi/close-context': 'Close browsing context via BiDi',
+          'POST /bidi/end-session': 'End BiDi session',
+          'GET /bidi/events': 'Get BiDi events',
+          'POST /bidi/clear-events': 'Clear BiDi events',
           'POST /interact/scroll': 'Enhanced element scrolling with viewport positioning',
           'POST /interact/wait': 'Enhanced element waiting with state validation',
           'POST /interact/text-selector': 'Find and interact with elements by text content',
@@ -1079,6 +1284,34 @@ class ExtendedBrowserConnector {
             addHandler: {
               id: 'custom-handler',
               handler: 'if (requestData.url.includes("blocked")) return { action: "abort", reason: "custom" }; return null;'
+            }
+          },
+          webDriverBiDi: {
+            connect: {},
+            createContext: {
+              url: 'https://example.com'
+            },
+            navigate: {
+              url: 'https://example.com'
+            },
+            screenshot: {},
+            evaluate: {
+              script: 'return document.title;',
+              awaitPromise: true
+            },
+            addPreloadScript: {
+              script: 'window.bidiInjected = true;'
+            },
+            locateNodes: {
+              selector: 'button',
+              maxNodeCount: 10
+            },
+            setViewport: {
+              width: 1920,
+              height: 1080
+            },
+            getEvents: {
+              method: 'browsingContext.load'
             }
           }
         }

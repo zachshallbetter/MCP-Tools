@@ -28,6 +28,8 @@ A powerful collection of Model Context Protocol (MCP) tools for browser automati
 - **Script Injection**: Inject and execute custom scripts with page context access
 - **Network Interception**: Intercept, block, modify, and mock network requests
 - **Request/Response Monitoring**: Real-time network traffic analysis
+- **WebDriver BiDi**: W3C-standard bidirectional browser automation protocol
+- **Real-time Events**: Live browsing context and script events
 - **Responsive Testing**: Cross-device compatibility validation
 
 ### 🐳 **Docker Integration**
@@ -197,6 +199,43 @@ curl http://localhost:3025/network/request-log
 curl http://localhost:3025/network/blocked-requests
 ```
 
+### WebDriver BiDi (W3C Standard)
+```bash
+# Connect to WebDriver BiDi
+curl -X POST http://localhost:3025/bidi/connect \
+  -H "Content-Type: application/json"
+
+# Create browsing context
+curl -X POST http://localhost:3025/bidi/create-context \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+
+# Navigate via BiDi
+curl -X POST http://localhost:3025/bidi/navigate \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+
+# Take screenshot via BiDi
+curl -X POST http://localhost:3025/bidi/screenshot \
+  -H "Content-Type: application/json"
+
+# Evaluate script via BiDi
+curl -X POST http://localhost:3025/bidi/evaluate \
+  -H "Content-Type: application/json" \
+  -d '{"script": "return document.title;", "awaitPromise": true}'
+
+# Locate nodes via BiDi
+curl -X POST http://localhost:3025/bidi/locate-nodes \
+  -H "Content-Type: application/json" \
+  -d '{"selector": "button", "maxNodeCount": 10}'
+
+# Get browsing context tree
+curl http://localhost:3025/bidi/get-tree
+
+# Get BiDi events
+curl http://localhost:3025/bidi/events
+```
+
 ## 🏗️ Architecture
 
 ```
@@ -289,6 +328,13 @@ docker exec -it browser-tools-mcp-dev bash
 | `throttleRequests` | Throttle request timing |
 | `getRequestLog` | Get intercepted request log |
 | `getResponseLog` | Get response log |
+| `connectBiDi` | Connect to WebDriver BiDi |
+| `createBrowsingContext` | Create browsing context via BiDi |
+| `navigateBiDi` | Navigate via BiDi |
+| `screenshotBiDi` | Take screenshot via BiDi |
+| `evaluateBiDi` | Evaluate script via BiDi |
+| `locateNodesBiDi` | Locate nodes via BiDi |
+| `getBiDiEvents` | Get BiDi events |
 
 ## 🛠️ Configuration
 
@@ -361,6 +407,17 @@ Our enhanced interaction system is built on modern Puppeteer patterns from the [
 - **Request Throttling**: Simulate slow network conditions and test performance
 - **Custom Handlers**: Add custom intercept handlers with full request/response control
 - **Comprehensive Logging**: Track all requests, responses, blocked requests, and modifications
+
+### **WebDriver BiDi (W3C Standard - [Specification](https://w3c.github.io/webdriver-bidi/))**
+- **Bidirectional Communication**: Real-time two-way communication with the browser
+- **W3C Standard**: Industry-standard protocol for browser automation
+- **Browsing Context Management**: Create, navigate, and manage browser contexts
+- **Real-time Events**: Live subscription to browsing context and script events
+- **Script Execution**: Execute scripts in sandboxed realms with full context access
+- **Node Location**: Locate DOM nodes using CSS selectors with BiDi protocol
+- **Preload Scripts**: Inject scripts that run before page load
+- **Session Management**: Full session lifecycle management with proper cleanup
+- **Realm Management**: Work with JavaScript realms and execution contexts
 
 ## 🙏 Acknowledgments
 
