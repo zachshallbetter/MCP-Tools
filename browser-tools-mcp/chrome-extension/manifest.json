@@ -1,0 +1,26 @@
+{
+    "name": "BrowserTools MCP",
+    "version": "1.2.0",
+    "description": "MCP tool for AI code editors to capture data from a browser such as console logs, network requests, screenshots and more",
+    "manifest_version": 3,
+    "devtools_page": "devtools.html",
+    "permissions": [
+      "activeTab",
+      "debugger",
+      "storage",
+      "tabs",
+      "tabCapture",
+      "windows"
+    ],
+    "host_permissions": [
+      "<all_urls>",
+      "http://localhost:*",
+      "http://127.0.0.1:*"
+    ],
+    "content_security_policy": {
+      "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://localhost:* http://127.0.0.1:*"
+    },
+    "background": {
+      "service_worker": "background.js"
+    }
+}
