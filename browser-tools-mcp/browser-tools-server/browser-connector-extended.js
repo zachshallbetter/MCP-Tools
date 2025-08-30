@@ -5,6 +5,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { chromiumScreenshotService } from './chromium-screenshot-service.js';
 import { lighthouseService } from './lighthouse-service.js';
+import { EnhancedInteractionService } from './enhanced-interaction-service.js';
 import fs from 'fs';
 import path from 'path';
 import http from 'http';
@@ -14,6 +15,7 @@ class ExtendedBrowserConnector {
     this.port = port;
     this.app = express();
     this.server = http.createServer(this.app);
+    this.enhancedInteractionService = new EnhancedInteractionService();
     this.setupMiddleware();
     this.setupRoutes();
   }
@@ -327,6 +329,197 @@ class ExtendedBrowserConnector {
       });
     });
 
+    // Enhanced Element Interactions
+    this.app.post('/interact/click', async (req, res) => {
+      try {
+        const { selector, url, options = {} } = req.body;
+        
+        if (!selector) {
+          return res.status(400).json({ error: 'Selector is required' });
+        }
+
+        console.log(`🖱️ Enhanced click interaction: ${selector}`);
+        const result = await this.enhancedInteractionService.clickElement(selector, { url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('Enhanced click error:', error);
+        res.status(500).json({ error: `Enhanced click failed: ${error}` });
+      }
+    });
+
+    this.app.post('/interact/fill', async (req, res) => {
+      try {
+        const { selector, value, url, options = {} } = req.body;
+        
+        if (!selector || value === undefined) {
+          return res.status(400).json({ error: 'Selector and value are required' });
+        }
+
+        console.log(`📝 Enhanced fill interaction: ${selector} with ${value}`);
+        const result = await this.enhancedInteractionService.fillInput(selector, value, { url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('Enhanced fill error:', error);
+        res.status(500).json({ error: `Enhanced fill failed: ${error}` });
+      }
+    });
+
+    this.app.post('/interact/hover', async (req, res) => {
+      try {
+        const { selector, url, options = {} } = req.body;
+        
+        if (!selector) {
+          return res.status(400).json({ error: 'Selector is required' });
+        }
+
+        console.log(`🖱️ Enhanced hover interaction: ${selector}`);
+        const result = await this.enhancedInteractionService.hoverElement(selector, { url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('Enhanced hover error:', error);
+        res.status(500).json({ error: `Enhanced hover failed: ${error}` });
+      }
+    });
+
+    this.app.post('/interact/scroll', async (req, res) => {
+      try {
+        const { selector, scrollOptions = {}, url, options = {} } = req.body;
+        
+        if (!selector) {
+          return res.status(400).json({ error: 'Selector is required' });
+        }
+
+        console.log(`📜 Enhanced scroll interaction: ${selector}`);
+        const result = await this.enhancedInteractionService.scrollElement(selector, scrollOptions, { url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('Enhanced scroll error:', error);
+        res.status(500).json({ error: `Enhanced scroll failed: ${error}` });
+      }
+    });
+
+    this.app.post('/interact/wait', async (req, res) => {
+      try {
+        const { selector, url, options = {} } = req.body;
+        
+        if (!selector) {
+          return res.status(400).json({ error: 'Selector is required' });
+        }
+
+        console.log(`⏳ Enhanced wait interaction: ${selector}`);
+        const result = await this.enhancedInteractionService.waitForElement(selector, { url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('Enhanced wait error:', error);
+        res.status(500).json({ error: `Enhanced wait failed: ${error}` });
+      }
+    });
+
+    // Advanced Selector Interactions
+    this.app.post('/interact/text-selector', async (req, res) => {
+      try {
+        const { text, url, options = {} } = req.body;
+        
+        if (!text) {
+          return res.status(400).json({ error: 'Text is required' });
+        }
+
+        console.log(`🔍 Text selector interaction: "${text}"`);
+        const result = await this.enhancedInteractionService.findElementByText(text, { url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('Text selector error:', error);
+        res.status(500).json({ error: `Text selector failed: ${error}` });
+      }
+    });
+
+    this.app.post('/interact/aria-selector', async (req, res) => {
+      try {
+        const { ariaSelector, url, options = {} } = req.body;
+        
+        if (!ariaSelector) {
+          return res.status(400).json({ error: 'ARIA selector is required' });
+        }
+
+        console.log(`♿ ARIA selector interaction: ${ariaSelector}`);
+        const result = await this.enhancedInteractionService.findElementByAria(ariaSelector, { url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('ARIA selector error:', error);
+        res.status(500).json({ error: `ARIA selector failed: ${error}` });
+      }
+    });
+
+    this.app.post('/interact/shadow-dom', async (req, res) => {
+      try {
+        const { hostSelector, targetSelector, url, options = {} } = req.body;
+        
+        if (!hostSelector || !targetSelector) {
+          return res.status(400).json({ error: 'Host selector and target selector are required' });
+        }
+
+        console.log(`🌳 Shadow DOM interaction: ${hostSelector} >>> ${targetSelector}`);
+        const result = await this.enhancedInteractionService.findElementInShadowDOM(hostSelector, targetSelector, { url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('Shadow DOM error:', error);
+        res.status(500).json({ error: `Shadow DOM interaction failed: ${error}` });
+      }
+    });
+
+    // Form Interactions
+    this.app.post('/interact/fill-form', async (req, res) => {
+      try {
+        const { formData, url, options = {} } = req.body;
+        
+        if (!formData || typeof formData !== 'object') {
+          return res.status(400).json({ error: 'Form data object is required' });
+        }
+
+        console.log(`📋 Form fill interaction with ${Object.keys(formData).length} fields`);
+        const result = await this.enhancedInteractionService.fillForm(formData, { url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('Form fill error:', error);
+        res.status(500).json({ error: `Form fill failed: ${error}` });
+      }
+    });
+
+    // Keyboard and Mouse Interactions
+    this.app.post('/interact/type', async (req, res) => {
+      try {
+        const { text, selector, url, options = {} } = req.body;
+        
+        if (!text) {
+          return res.status(400).json({ error: 'Text is required' });
+        }
+
+        console.log(`⌨️ Type interaction: "${text}"`);
+        const result = await this.enhancedInteractionService.typeText(text, { selector, url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('Type error:', error);
+        res.status(500).json({ error: `Type failed: ${error}` });
+      }
+    });
+
+    this.app.post('/interact/mouse-click', async (req, res) => {
+      try {
+        const { x, y, url, options = {} } = req.body;
+        
+        if (x === undefined || y === undefined) {
+          return res.status(400).json({ error: 'X and Y coordinates are required' });
+        }
+
+        console.log(`🖱️ Mouse click interaction at (${x}, ${y})`);
+        const result = await this.enhancedInteractionService.mouseClick(x, y, { url, ...options });
+        res.json(result);
+      } catch (error) {
+        console.error('Mouse click error:', error);
+        res.status(500).json({ error: `Mouse click failed: ${error}` });
+      }
+    });
+
     // API Documentation
     this.app.get('/api', (req, res) => {
       res.json({
@@ -350,6 +543,17 @@ class ExtendedBrowserConnector {
           'GET /network-success': 'Get network success logs',
           'GET /network-errors': 'Get network errors',
           'POST /wipelogs': 'Clear all logs',
+          'POST /interact/click': 'Enhanced element click with automatic waiting',
+          'POST /interact/fill': 'Enhanced input filling with smart detection',
+          'POST /interact/hover': 'Enhanced element hover with stability checks',
+          'POST /interact/scroll': 'Enhanced element scrolling with viewport positioning',
+          'POST /interact/wait': 'Enhanced element waiting with state validation',
+          'POST /interact/text-selector': 'Find and interact with elements by text content',
+          'POST /interact/aria-selector': 'Find and interact with elements by ARIA attributes',
+          'POST /interact/shadow-dom': 'Interact with elements inside Shadow DOM',
+          'POST /interact/fill-form': 'Fill multiple form fields with validation',
+          'POST /interact/type': 'Enhanced keyboard typing with delay support',
+          'POST /interact/mouse-click': 'Precise mouse click at coordinates',
           'GET /api': 'This endpoint list'
         },
         examples: {
@@ -378,6 +582,45 @@ class ExtendedBrowserConnector {
               { type: 'type', selector: '#email', value: 'test@example.com' },
               { type: 'wait', duration: 1000 }
             ]
+          },
+          enhancedInteractions: {
+            click: {
+              selector: 'button[type="submit"]',
+              url: 'https://example.com',
+              options: { timeout: 10000, force: false }
+            },
+            fill: {
+              selector: 'input[name="email"]',
+              value: 'user@example.com',
+              url: 'https://example.com'
+            },
+            textSelector: {
+              text: 'Submit Form',
+              url: 'https://example.com'
+            },
+            ariaSelector: {
+              ariaSelector: '[name="Submit"][role="button"]',
+              url: 'https://example.com'
+            },
+            shadowDOM: {
+              hostSelector: 'my-custom-element',
+              targetSelector: 'button',
+              url: 'https://example.com'
+            },
+            formFill: {
+              formData: {
+                'input[name="username"]': 'testuser',
+                'input[name="password"]': 'password123',
+                'select[name="country"]': 'US'
+              },
+              url: 'https://example.com'
+            },
+            mouseClick: {
+              x: 500,
+              y: 300,
+              url: 'https://example.com',
+              options: { button: 'left', clickCount: 1 }
+            }
           }
         }
       });

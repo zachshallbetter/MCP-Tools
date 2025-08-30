@@ -19,7 +19,10 @@ A powerful collection of Model Context Protocol (MCP) tools for browser automati
 ### 🔧 **Development Tools**
 - **Console Monitoring**: Real-time console logs and error tracking
 - **Network Analysis**: Request/response monitoring and debugging
-- **Element Interaction**: Click, type, hover, and form automation
+- **Enhanced Element Interactions**: Advanced locator-based interactions with automatic waiting
+- **Advanced Selectors**: Text, ARIA, and Shadow DOM selectors
+- **Form Automation**: Multi-field form filling with validation
+- **Keyboard & Mouse Control**: Precise input and click interactions
 - **Responsive Testing**: Cross-device compatibility validation
 
 ### 🐳 **Docker Integration**
@@ -96,6 +99,34 @@ curl -X POST http://localhost:3025/analyze-performance \
   -d '{"url": "https://example.com", "device": "mobile"}'
 ```
 
+### Enhanced Element Interactions
+```bash
+# Click element with automatic waiting and stability checks
+curl -X POST http://localhost:3025/interact/click \
+  -H "Content-Type: application/json" \
+  -d '{"selector": "button[type=\"submit\"]", "url": "https://example.com"}'
+
+# Fill input with smart detection
+curl -X POST http://localhost:3025/interact/fill \
+  -H "Content-Type: application/json" \
+  -d '{"selector": "input[name=\"email\"]", "value": "user@example.com"}'
+
+# Find element by text content
+curl -X POST http://localhost:3025/interact/text-selector \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Submit Form", "url": "https://example.com"}'
+
+# Interact with Shadow DOM elements
+curl -X POST http://localhost:3025/interact/shadow-dom \
+  -H "Content-Type: application/json" \
+  -d '{"hostSelector": "my-custom-element", "targetSelector": "button"}'
+
+# Fill multiple form fields
+curl -X POST http://localhost:3025/interact/fill-form \
+  -H "Content-Type: application/json" \
+  -d '{"formData": {"input[name=\"username\"]": "testuser", "input[name=\"password\"]": "password123"}}'
+```
+
 ## 🏗️ Architecture
 
 ```
@@ -164,6 +195,17 @@ docker exec -it browser-tools-mcp-dev bash
 | `getConsoleErrors` | Get console error messages |
 | `getNetworkLogs` | Monitor network activity |
 | `getNetworkErrors` | Track network failures |
+| `clickElement` | Enhanced element clicking with automatic waiting |
+| `fillInput` | Smart input filling with type detection |
+| `hoverElement` | Element hovering with stability checks |
+| `scrollElement` | Element scrolling with viewport positioning |
+| `waitForElement` | Element waiting with state validation |
+| `findElementByText` | Find elements by text content |
+| `findElementByAria` | Find elements by ARIA attributes |
+| `interactWithShadowDOM` | Interact with Shadow DOM elements |
+| `fillForm` | Multi-field form automation |
+| `typeText` | Enhanced keyboard typing |
+| `mouseClick` | Precise mouse click interactions |
 
 ## 🛠️ Configuration
 
@@ -196,10 +238,32 @@ The Docker setup includes:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 🚀 Enhanced Features (Inspired by Puppeteer)
+
+Our enhanced interaction system is built on modern Puppeteer patterns from the [official documentation](https://pptr.dev/guides/page-interactions):
+
+### **Advanced Locator System**
+- **Automatic Waiting**: Elements are automatically waited for with proper state validation
+- **Stability Checks**: Bounding box stability over animation frames
+- **Viewport Positioning**: Automatic scrolling to bring elements into view
+- **State Validation**: Ensures elements are visible, enabled, and ready for interaction
+
+### **Smart Selectors**
+- **Text Selectors**: `::-p-text("Submit Form")` - Find elements by text content
+- **ARIA Selectors**: `::-p-aria([name="Submit"][role="button"])` - Accessibility-first selection
+- **Shadow DOM**: `my-element >>> button` - Deep shadow DOM traversal
+- **Custom Selectors**: Framework-specific selectors (React, Vue, etc.)
+
+### **Enhanced Interactions**
+- **Smart Input Detection**: Automatically handles `<input>`, `<select>`, and custom elements
+- **Form Automation**: Multi-field form filling with validation
+- **Precise Control**: Mouse and keyboard interactions with coordinate precision
+- **Error Handling**: Comprehensive error reporting and recovery
+
 ## 🙏 Acknowledgments
 
 - **Model Context Protocol**: For the MCP framework
-- **Puppeteer**: For browser automation capabilities
+- **Puppeteer**: For browser automation capabilities and advanced interaction patterns
 - **Lighthouse**: For web analysis and auditing
 - **Docker**: For containerization and deployment
 
