@@ -1,0 +1,31 @@
+{
+  "agentCanUpdateSnapshot": true,
+  "install": "npm install",
+  "start": "sudo service docker start",
+  "terminals": [
+    {
+      "name": "MCP Server",
+      "command": "npm run start"
+    },
+    {
+      "name": "Docker Services",
+      "command": "docker-compose up"
+    },
+    {
+      "name": "Build",
+      "command": "npm run build"
+    },
+    {
+      "name": "Test API",
+      "command": "npm run test:api"
+    },
+    {
+      "name": "Test MCP",
+      "command": "npm run test:mcp"
+    },
+    {
+      "name": "Docker Logs",
+      "command": "npm run docker:logs"
+    }
+  ]
+}

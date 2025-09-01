@@ -1,0 +1,45 @@
+{
+  "name": "mcp-tools",
+  "version": "2.0.0",
+  "description": "Advanced browser automation platform with W3C WebDriver BiDi, network interception, and comprehensive web analysis",
+  "main": "src/mcp-server/dist/mcp-server.js",
+  "scripts": {
+    "build": "npm run build:mcp && npm run build:http",
+    "build:mcp": "cd src/mcp-server && npm run build",
+    "build:http": "cd src/http-server && npm install",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "dev": "npm run build && npm run start",
+    "test": "npm run test:api && npm run test:mcp",
+    "test:api": "cd tests && node test-extended-api.js",
+    "test:mcp": "cd tests && node simple-mcp-server.js",
+    "clean": "rm -rf node_modules src/*/node_modules src/*/dist",
+    "docker:build": "cd docker && docker-compose build",
+    "docker:up": "cd docker && docker-compose up -d",
+    "docker:down": "cd docker && docker-compose down",
+    "docker:logs": "cd docker && docker-compose logs -f"
+  },
+  "keywords": [
+    "mcp",
+    "browser-automation",
+    "puppeteer",
+    "lighthouse",
+    "webdriver-bidi",
+    "network-interception",
+    "screenshots",
+    "web-analysis"
+  ],
+  "author": "Zach Shallbetter",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zachshallbetter/MCP-Tools.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "workspaces": [
+    "src/*"
+  ]
+}

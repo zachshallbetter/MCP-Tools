@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  browser-tools-mcp-dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: browser-tools-mcp-dev
+    ports:
+      - "3025:3025"  # HTTP
+      - "3026:3026"  # HTTPS
+    environment:
+      - NODE_ENV=production
+      - PORT=3025
+      - ENABLE_HTTPS=true
+      - CERT_DIR=/app/certs
+      - CHROMIUM_PATH=/usr/bin/chromium
+    volumes:
+      - ../src:/app/src
+      - ../certs:/app/certs
+      - ../tests:/app/tests
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3025/.identity"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

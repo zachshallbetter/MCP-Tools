@@ -43,6 +43,35 @@ A powerful collection of Model Context Protocol (MCP) tools for advanced browser
 - **Resource Management**: Configurable memory and CPU limits
 - **Health Monitoring**: Built-in health checks and monitoring
 
+## 🏗️ Project Structure
+
+```
+MCP-Tools/
+├── src/                          # Source code
+│   ├── mcp-server/              # MCP server implementation
+│   │   ├── mcp-server.ts        # Main MCP server
+│   │   ├── package.json         # MCP server dependencies
+│   │   └── dist/                # Compiled JavaScript
+│   ├── http-server/             # HTTP API server
+│   │   ├── browser-connector-extended.js
+│   │   ├── package.json         # HTTP server dependencies
+│   │   └── secure-server.ts     # HTTPS support
+│   ├── services/                # Core services
+│   │   ├── chromium-screenshot-service.js
+│   │   ├── lighthouse-service.js
+│   │   ├── enhanced-interaction-service.js
+│   │   ├── javascript-execution-service.js
+│   │   ├── network-interception-service.js
+│   │   └── webdriver-bidi-service.js
+│   └── utils/                   # Utilities
+├── docs/                        # Comprehensive documentation
+├── tests/                       # Test files and examples
+├── scripts/                     # Build and utility scripts
+├── docker/                      # Docker configuration
+├── examples/                    # Usage examples
+└── config/                      # Configuration files
+```
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -58,12 +87,20 @@ A powerful collection of Model Context Protocol (MCP) tools for advanced browser
    cd MCP-Tools
    ```
 
-2. **Start with Docker**
+2. **Install dependencies and build**
    ```bash
-   docker-compose up -d
+   npm install
+   npm run build
    ```
 
-3. **Verify installation**
+3. **Start with Docker**
+   ```bash
+   npm run start
+   # or
+   cd docker && docker-compose up -d
+   ```
+
+4. **Verify installation**
    ```bash
    curl http://localhost:3025/.identity
    ```
@@ -78,7 +115,7 @@ Add to your MCP configuration (e.g., `~/.cursor/mcp.json`):
     "browser-tools": {
       "command": "node",
       "args": [
-        "/path/to/MCP-Tools/browser-tools-mcp/dist/mcp-server.js"
+        "/path/to/MCP-Tools/src/mcp-server/dist/mcp-server.js"
       ],
       "env": {}
     }
@@ -194,45 +231,38 @@ curl -X POST http://localhost:3025/bidi/evaluate \
   -d '{"script": "return document.title;", "awaitPromise": true}'
 ```
 
-## 🏗️ Architecture
-
-```
-MCP-Tools/
-├── browser-tools-mcp/          # MCP server implementation
-│   ├── mcp-server.ts          # Main MCP server
-│   └── dist/                  # Compiled JavaScript
-├── browser-tools-server/      # HTTP API server
-│   ├── browser-connector-extended.js
-│   ├── chromium-screenshot-service.js
-│   ├── lighthouse-service.js
-│   ├── enhanced-interaction-service.js
-│   ├── javascript-execution-service.js
-│   ├── network-interception-service.js
-│   ├── webdriver-bidi-service.js
-│   └── secure-server.ts
-├── docs/                      # Comprehensive documentation
-├── docker-compose.yml         # Docker configuration
-├── Dockerfile                 # Container definition
-└── start-server.sh           # Startup script
-```
-
-## 📚 Documentation
-
-### **Getting Started**
-- **[Getting Started Guide](browser-tools-mcp/docs/getting-started.md)**: Complete setup and configuration
-- **[Docker Guide](browser-tools-mcp/docs/docker-guide.md)**: Containerization and deployment
-- **[API Reference](browser-tools-mcp/docs/api-reference.md)**: Complete API documentation
-- **[Features Guide](browser-tools-mcp/docs/features.md)**: Detailed feature overview
-- **[Troubleshooting](browser-tools-mcp/docs/troubleshooting.md)**: Common issues and solutions
-
-### **Key Concepts**
-- **Model Context Protocol**: AI client integration framework
-- **WebDriver BiDi**: W3C-standard browser automation
-- **Puppeteer**: Advanced browser control and automation
-- **Lighthouse**: Web performance and quality analysis
-- **Docker**: Containerized deployment and management
-
 ## 🔧 Development
+
+### Available Scripts
+```bash
+# Build all components
+npm run build
+
+# Build specific components
+npm run build:mcp      # Build MCP server
+npm run build:http     # Build HTTP server
+
+# Start services
+npm run start          # Start with Docker
+npm run stop           # Stop Docker services
+
+# Development mode
+npm run dev            # Build and start
+
+# Testing
+npm run test           # Run all tests
+npm run test:api       # Test API endpoints
+npm run test:mcp       # Test MCP tools
+
+# Docker management
+npm run docker:build   # Build Docker image
+npm run docker:up      # Start Docker services
+npm run docker:down    # Stop Docker services
+npm run docker:logs    # View Docker logs
+
+# Cleanup
+npm run clean          # Remove build artifacts
+```
 
 ### Local Development
 ```bash
@@ -240,37 +270,38 @@ MCP-Tools/
 npm install
 
 # Build MCP server
-cd browser-tools-mcp && npm run build
+cd src/mcp-server && npm run build
 
 # Start HTTP server
-cd ../browser-tools-server && node browser-connector-extended.js
+cd src/http-server && npm start
 ```
 
 ### Docker Development
 ```bash
 # Build and start
-docker-compose up --build
+cd docker && docker-compose up --build
 
 # View logs
-docker-compose logs -f
+cd docker && docker-compose logs -f
 
 # Access container
 docker exec -it browser-tools-mcp-dev bash
 ```
 
-### Testing
-```bash
-# Test basic functionality
-curl http://localhost:3025/.identity
+## 📚 Documentation
 
-# Test screenshot capability
-curl -X POST http://localhost:3025/capture-screenshot \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://example.com"}'
+### **Getting Started**
+- **[🚀 Getting Started Guide](docs/getting-started.md)** - Complete setup and configuration
+- **[🐳 Docker Guide](docs/docker-guide.md)** - Containerization and deployment
+- **[🔧 Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
 
-# Test MCP server
-node browser-tools-mcp/simple-mcp-server.js
-```
+### **Reference Documentation**
+- **[📖 API Reference](docs/api-reference.md)** - Complete API documentation
+- **[✨ Features Guide](docs/features.md)** - Detailed feature overview
+
+### **Project Overview**
+- **[🏠 Main README](README.md)** - Project overview and quick start
+- **[📦 Repository](https://github.com/zachshallbetter/MCP-Tools)** - Source code and issues
 
 ## 🚀 Advanced Features
 
@@ -312,10 +343,10 @@ node browser-tools-mcp/simple-mcp-server.js
 ```bash
 # Enable HTTPS
 export ENABLE_HTTPS=true
-docker-compose up -d
+npm run start
 
 # Generate certificates
-cd browser-tools-mcp/browser-tools-server
+cd src/http-server
 node generate-certs.js
 
 # Test HTTPS endpoint
@@ -337,7 +368,7 @@ curl -k https://localhost:3026/.identity
 curl http://localhost:3025/.identity
 
 # Container status
-docker-compose ps
+cd docker && docker-compose ps
 
 # Resource usage
 docker stats browser-tools-mcp-dev
@@ -367,11 +398,13 @@ LOG_LEVEL=debug
 
 ### Docker Configuration
 ```yaml
-# docker-compose.yml
+# docker/docker-compose.yml
 version: '3.8'
 services:
   browser-tools-mcp-dev:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     ports:
       - "3025:3025"  # HTTP
       - "3026:3026"  # HTTPS
@@ -379,8 +412,8 @@ services:
       - ENABLE_HTTPS=true
       - PORT=3025
     volumes:
-      - ./browser-tools-mcp:/app
-      - ./browser-tools-mcp/certs:/app/certs
+      - ../src:/app/src
+      - ../certs:/app/certs
 ```
 
 ## 🤝 Contributing
