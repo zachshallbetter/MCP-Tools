@@ -1,6 +1,8 @@
 # 🚀 MCP-Tools: Advanced Browser Automation & Web Analysis
 
-A powerful collection of Model Context Protocol (MCP) tools for browser automation, web analysis, and development workflows. Built with Node.js, Docker, and cutting-edge web technologies.
+> **Enterprise-grade browser automation platform with W3C WebDriver BiDi, network interception, and comprehensive web analysis**
+
+A powerful collection of Model Context Protocol (MCP) tools for advanced browser automation, web analysis, and development workflows. Built with Node.js, Docker, and cutting-edge web technologies including the latest W3C standards.
 
 ## ✨ Features
 
@@ -9,12 +11,14 @@ A powerful collection of Model Context Protocol (MCP) tools for browser automati
 - **Full Page Rendering**: Capture complete web pages with dynamic content
 - **Custom Viewports**: Support for desktop, mobile, and tablet resolutions
 - **Direct URL Access**: No browser navigation required
+- **Multi-Format Support**: PNG, JPEG, WebP, and PDF output
 
 ### 📊 **Lighthouse Integration**
 - **Performance Audits**: Detailed performance metrics and optimization suggestions
 - **Accessibility Testing**: WCAG compliance and accessibility analysis
 - **SEO Analysis**: Meta tags, structured data, and SEO optimization
 - **Best Practices**: Security, performance, and coding standards
+- **Core Web Vitals**: FCP, LCP, FID, CLS, and TTI metrics
 
 ### 🔧 **Development Tools**
 - **Console Monitoring**: Real-time console logs and error tracking
@@ -36,6 +40,8 @@ A powerful collection of Model Context Protocol (MCP) tools for browser automati
 - **Containerized Environment**: Consistent deployment across platforms
 - **HTTPS Support**: Built-in SSL certificate generation
 - **Easy Setup**: One-command deployment with Docker Compose
+- **Resource Management**: Configurable memory and CPU limits
+- **Health Monitoring**: Built-in health checks and monitoring
 
 ## 🚀 Quick Start
 
@@ -88,6 +94,11 @@ Add to your MCP configuration (e.g., `~/.cursor/mcp.json`):
 curl -X POST http://localhost:3025/capture-screenshot \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com", "fullPage": true}'
+
+# Mobile viewport screenshot
+curl -X POST http://localhost:3025/capture-screenshot \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "viewport": {"width": 375, "height": 667}}'
 ```
 
 ### Lighthouse Audits
@@ -95,12 +106,9 @@ curl -X POST http://localhost:3025/capture-screenshot \
 # Run comprehensive Lighthouse audit
 curl -X POST http://localhost:3025/lighthouse-audit \
   -H "Content-Type: application/json" \
-  -d '{"url": "https://example.com"}'
-```
+  -d '{"url": "https://example.com", "categories": ["performance", "accessibility"]}'
 
-### Performance Analysis
-```bash
-# Analyze performance with device simulation
+# Mobile performance analysis
 curl -X POST http://localhost:3025/analyze-performance \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com", "device": "mobile"}'
@@ -108,30 +116,20 @@ curl -X POST http://localhost:3025/analyze-performance \
 
 ### Enhanced Element Interactions
 ```bash
-# Click element with automatic waiting and stability checks
+# Click element with automatic waiting
 curl -X POST http://localhost:3025/interact/click \
   -H "Content-Type: application/json" \
   -d '{"selector": "button[type=\"submit\"]", "url": "https://example.com"}'
 
-# Fill input with smart detection
-curl -X POST http://localhost:3025/interact/fill \
+# Fill form with multiple fields
+curl -X POST http://localhost:3025/interact/fill-form \
   -H "Content-Type: application/json" \
-  -d '{"selector": "input[name=\"email\"]", "value": "user@example.com"}'
+  -d '{"url": "https://example.com", "formData": {"input[name=\"email\"]": "user@example.com", "input[name=\"password\"]": "password123"}}'
 
 # Find element by text content
 curl -X POST http://localhost:3025/interact/text-selector \
   -H "Content-Type: application/json" \
   -d '{"text": "Submit Form", "url": "https://example.com"}'
-
-# Interact with Shadow DOM elements
-curl -X POST http://localhost:3025/interact/shadow-dom \
-  -H "Content-Type: application/json" \
-  -d '{"hostSelector": "my-custom-element", "targetSelector": "button"}'
-
-# Fill multiple form fields
-curl -X POST http://localhost:3025/interact/fill-form \
-  -H "Content-Type: application/json" \
-  -d '{"formData": {"input[name=\"username\"]": "testuser", "input[name=\"password\"]": "password123"}}'
 ```
 
 ### JavaScript Execution
@@ -150,16 +148,6 @@ curl -X POST http://localhost:3025/js/execute-function \
 curl -X POST http://localhost:3025/js/execute-on-element \
   -H "Content-Type: application/json" \
   -d '{"selector": "input[name=\"email\"]", "script": "return this.value;"}'
-
-# Execute script on multiple elements
-curl -X POST http://localhost:3025/js/execute-on-elements \
-  -H "Content-Type: application/json" \
-  -d '{"selector": "a", "script": "return Array.from(this).map(el => ({ text: el.textContent, href: el.href }));"}'
-
-# Inject custom script
-curl -X POST http://localhost:3025/js/inject-script \
-  -H "Content-Type: application/json" \
-  -d '{"script": "window.customData = { timestamp: Date.now() }; return window.customData;", "url": "https://example.com"}'
 ```
 
 ### Network Interception
@@ -167,36 +155,17 @@ curl -X POST http://localhost:3025/js/inject-script \
 # Enable network interception
 curl -X POST http://localhost:3025/network/enable-interception \
   -H "Content-Type: application/json" \
-  -d '{"url": "https://example.com", "priority": 0}'
+  -d '{"url": "https://example.com"}'
 
 # Block image and analytics requests
 curl -X POST http://localhost:3025/network/block-requests \
   -H "Content-Type: application/json" \
   -d '{"patterns": [".png", ".jpg", "analytics"], "reason": "performance optimization"}'
 
-# Block resource types
-curl -X POST http://localhost:3025/network/block-resource-types \
-  -H "Content-Type: application/json" \
-  -d '{"resourceTypes": ["image", "stylesheet"], "reason": "reduce bandwidth"}'
-
-# Modify headers for API requests
-curl -X POST http://localhost:3025/network/modify-headers \
-  -H "Content-Type: application/json" \
-  -d '{"urlPattern": "api.example.com", "headerModifications": {"Authorization": "Bearer token123"}}'
-
 # Mock API response
 curl -X POST http://localhost:3025/network/mock-response \
   -H "Content-Type: application/json" \
   -d '{"urlPattern": "/api/users", "mockData": {"status": 200, "body": {"users": [{"id": 1, "name": "John"}]}}}'
-
-# Throttle requests
-curl -X POST http://localhost:3025/network/throttle-requests \
-  -H "Content-Type: application/json" \
-  -d '{"urlPattern": "api.example.com", "delay": 2000}'
-
-# Get network logs
-curl http://localhost:3025/network/request-log
-curl http://localhost:3025/network/blocked-requests
 ```
 
 ### WebDriver BiDi (W3C Standard)
@@ -223,17 +192,6 @@ curl -X POST http://localhost:3025/bidi/screenshot \
 curl -X POST http://localhost:3025/bidi/evaluate \
   -H "Content-Type: application/json" \
   -d '{"script": "return document.title;", "awaitPromise": true}'
-
-# Locate nodes via BiDi
-curl -X POST http://localhost:3025/bidi/locate-nodes \
-  -H "Content-Type: application/json" \
-  -d '{"selector": "button", "maxNodeCount": 10}'
-
-# Get browsing context tree
-curl http://localhost:3025/bidi/get-tree
-
-# Get BiDi events
-curl http://localhost:3025/bidi/events
 ```
 
 ## 🏗️ Architecture
@@ -247,12 +205,32 @@ MCP-Tools/
 │   ├── browser-connector-extended.js
 │   ├── chromium-screenshot-service.js
 │   ├── lighthouse-service.js
+│   ├── enhanced-interaction-service.js
+│   ├── javascript-execution-service.js
+│   ├── network-interception-service.js
+│   ├── webdriver-bidi-service.js
 │   └── secure-server.ts
-├── docs/                      # Documentation
+├── docs/                      # Comprehensive documentation
 ├── docker-compose.yml         # Docker configuration
 ├── Dockerfile                 # Container definition
 └── start-server.sh           # Startup script
 ```
+
+## 📚 Documentation
+
+### **Getting Started**
+- **[Getting Started Guide](browser-tools-mcp/docs/getting-started.md)**: Complete setup and configuration
+- **[Docker Guide](browser-tools-mcp/docs/docker-guide.md)**: Containerization and deployment
+- **[API Reference](browser-tools-mcp/docs/api-reference.md)**: Complete API documentation
+- **[Features Guide](browser-tools-mcp/docs/features.md)**: Detailed feature overview
+- **[Troubleshooting](browser-tools-mcp/docs/troubleshooting.md)**: Common issues and solutions
+
+### **Key Concepts**
+- **Model Context Protocol**: AI client integration framework
+- **WebDriver BiDi**: W3C-standard browser automation
+- **Puppeteer**: Advanced browser control and automation
+- **Lighthouse**: Web performance and quality analysis
+- **Docker**: Containerized deployment and management
 
 ## 🔧 Development
 
@@ -280,133 +258,43 @@ docker-compose logs -f
 docker exec -it browser-tools-mcp-dev bash
 ```
 
-## 📚 API Reference
+### Testing
+```bash
+# Test basic functionality
+curl http://localhost:3025/.identity
 
-### Core Endpoints
+# Test screenshot capability
+curl -X POST http://localhost:3025/capture-screenshot \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/.identity` | GET | Server health and capabilities |
-| `/capture-screenshot` | POST | Take screenshots with advanced options |
-| `/lighthouse-audit` | POST | Comprehensive Lighthouse analysis |
-| `/analyze-performance` | POST | Performance analysis with device simulation |
-| `/test-accessibility` | POST | Accessibility testing with WCAG compliance |
-| `/analyze-seo` | POST | SEO analysis and optimization |
-| `/console-logs` | GET | Browser console logs |
-| `/network-logs` | GET | Network request/response logs |
+# Test MCP server
+node browser-tools-mcp/simple-mcp-server.js
+```
 
-### MCP Tools
+## 🚀 Advanced Features
 
-| Tool | Description |
-|------|-------------|
-| `takeScreenshot` | Capture screenshots of web pages |
-| `getConsoleLogs` | Retrieve browser console logs |
-| `getConsoleErrors` | Get console error messages |
-| `getNetworkLogs` | Monitor network activity |
-| `getNetworkErrors` | Track network failures |
-| `clickElement` | Enhanced element clicking with automatic waiting |
-| `fillInput` | Smart input filling with type detection |
-| `hoverElement` | Element hovering with stability checks |
-| `scrollElement` | Element scrolling with viewport positioning |
-| `waitForElement` | Element waiting with state validation |
-| `findElementByText` | Find elements by text content |
-| `findElementByAria` | Find elements by ARIA attributes |
-| `interactWithShadowDOM` | Interact with Shadow DOM elements |
-| `fillForm` | Multi-field form automation |
-| `typeText` | Enhanced keyboard typing |
-| `mouseClick` | Precise mouse click interactions |
-| `evaluateJavaScript` | Execute JavaScript in page context |
-| `executeFunction` | Execute custom functions with arguments |
-| `executeOnElement` | Run scripts on specific elements |
-| `executeOnElements` | Run scripts on element collections |
-| `injectScript` | Inject and execute custom scripts |
-| `enableNetworkInterception` | Enable network request interception |
-| `blockRequests` | Block requests matching patterns |
-| `blockResourceTypes` | Block requests by resource type |
-| `modifyHeaders` | Modify request headers |
-| `mockResponse` | Mock API responses |
-| `throttleRequests` | Throttle request timing |
-| `getRequestLog` | Get intercepted request log |
-| `getResponseLog` | Get response log |
-| `connectBiDi` | Connect to WebDriver BiDi |
-| `createBrowsingContext` | Create browsing context via BiDi |
-| `navigateBiDi` | Navigate via BiDi |
-| `screenshotBiDi` | Take screenshot via BiDi |
-| `evaluateBiDi` | Evaluate script via BiDi |
-| `locateNodesBiDi` | Locate nodes via BiDi |
-| `getBiDiEvents` | Get BiDi events |
-
-## 🛠️ Configuration
-
-### Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | 3025 | HTTP server port |
-| `ENABLE_HTTPS` | false | Enable HTTPS with self-signed certificates |
-| `CHROMIUM_PATH` | `/usr/bin/chromium` | Chromium executable path |
-| `SCREENSHOT_TIMEOUT` | 30000 | Screenshot timeout in milliseconds |
-
-### Docker Configuration
-
-The Docker setup includes:
-- **Chromium**: For browser automation
-- **Node.js**: Runtime environment
-- **OpenSSL**: Certificate generation
-- **HTTPS Support**: Self-signed certificate generation
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🚀 Enhanced Features (Inspired by Puppeteer)
-
-Our enhanced interaction system is built on modern Puppeteer patterns from the [official documentation](https://pptr.dev/guides/page-interactions):
-
-### **Advanced Locator System**
+### **Enhanced Element Interactions (Inspired by [Puppeteer](https://pptr.dev/guides/page-interactions))**
 - **Automatic Waiting**: Elements are automatically waited for with proper state validation
 - **Stability Checks**: Bounding box stability over animation frames
 - **Viewport Positioning**: Automatic scrolling to bring elements into view
 - **State Validation**: Ensures elements are visible, enabled, and ready for interaction
 
-### **Smart Selectors**
-- **Text Selectors**: `::-p-text("Submit Form")` - Find elements by text content
-- **ARIA Selectors**: `::-p-aria([name="Submit"][role="button"])` - Accessibility-first selection
-- **Shadow DOM**: `my-element >>> button` - Deep shadow DOM traversal
-- **Custom Selectors**: Framework-specific selectors (React, Vue, etc.)
-
-### **Enhanced Interactions**
-- **Smart Input Detection**: Automatically handles `<input>`, `<select>`, and custom elements
-- **Form Automation**: Multi-field form filling with validation
-- **Precise Control**: Mouse and keyboard interactions with coordinate precision
-- **Error Handling**: Comprehensive error reporting and recovery
-
-### **JavaScript Execution (Inspired by [Puppeteer JavaScript Execution Guide](https://pptr.dev/guides/javascript-execution))**
+### **JavaScript Execution (Inspired by [Puppeteer JavaScript Execution](https://pptr.dev/guides/javascript-execution))**
 - **Page Context Execution**: Execute JavaScript directly in the page context with full DOM access
 - **Handle Management**: Work with JSHandle and ElementHandle for complex object manipulation
 - **Function Execution**: Execute custom functions with argument passing and return value handling
 - **Element-Specific Scripts**: Run scripts on specific elements or element collections
 - **Promise Support**: Handle asynchronous operations and promises with automatic awaiting
 - **Script Injection**: Inject and execute custom scripts with full page context access
-- **Return Type Handling**: Automatic serialization of primitive types and object references
 
-### **Network Interception (Inspired by [Puppeteer Network Interception Guide](https://pptr.dev/guides/network-interception))**
+### **Network Interception (Inspired by [Puppeteer Network Interception](https://pptr.dev/guides/network-interception))**
 - **Request Interception**: Intercept and control every network request before it's made
 - **Cooperative Intercept Mode**: Multiple handlers working together with priority-based resolution
 - **Request Blocking**: Block requests by URL patterns, resource types, or custom criteria
 - **Header Modification**: Modify request headers for authentication, testing, or debugging
 - **Response Mocking**: Mock API responses for testing and development
 - **Request Throttling**: Simulate slow network conditions and test performance
-- **Custom Handlers**: Add custom intercept handlers with full request/response control
-- **Comprehensive Logging**: Track all requests, responses, blocked requests, and modifications
 
 ### **WebDriver BiDi (W3C Standard - [Specification](https://w3c.github.io/webdriver-bidi/))**
 - **Bidirectional Communication**: Real-time two-way communication with the browser
@@ -417,13 +305,108 @@ Our enhanced interaction system is built on modern Puppeteer patterns from the [
 - **Node Location**: Locate DOM nodes using CSS selectors with BiDi protocol
 - **Preload Scripts**: Inject scripts that run before page load
 - **Session Management**: Full session lifecycle management with proper cleanup
-- **Realm Management**: Work with JavaScript realms and execution contexts
+
+## 🔒 Security & HTTPS
+
+### HTTPS Support
+```bash
+# Enable HTTPS
+export ENABLE_HTTPS=true
+docker-compose up -d
+
+# Generate certificates
+cd browser-tools-mcp/browser-tools-server
+node generate-certs.js
+
+# Test HTTPS endpoint
+curl -k https://localhost:3026/.identity
+```
+
+### Security Features
+- **Self-signed Certificate Generation**: Automatic SSL certificate creation
+- **TLS 1.2+ Support**: Modern encryption standards
+- **Request Validation**: Input sanitization and validation
+- **Rate Limiting**: Configurable request rate limiting
+- **Access Control**: IP whitelisting and authentication support
+
+## 📊 Monitoring & Performance
+
+### Health Checks
+```bash
+# Service health
+curl http://localhost:3025/.identity
+
+# Container status
+docker-compose ps
+
+# Resource usage
+docker stats browser-tools-mcp-dev
+```
+
+### Performance Optimization
+- **Headless Browser**: Resource-efficient operation
+- **Connection Pooling**: HTTP connection reuse
+- **Memory Management**: Efficient memory usage and cleanup
+- **Request Batching**: Multiple operations in single requests
+
+## 🔧 Configuration
+
+### Environment Variables
+```bash
+# Server configuration
+PORT=3025
+ENABLE_HTTPS=true
+CERT_DIR=/app/certs
+CHROMIUM_PATH=/usr/bin/chromium
+
+# Development mode
+NODE_ENV=development
+DEBUG=browser-tools:*
+LOG_LEVEL=debug
+```
+
+### Docker Configuration
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  browser-tools-mcp-dev:
+    build: .
+    ports:
+      - "3025:3025"  # HTTP
+      - "3026:3026"  # HTTPS
+    environment:
+      - ENABLE_HTTPS=true
+      - PORT=3025
+    volumes:
+      - ./browser-tools-mcp:/app
+      - ./browser-tools-mcp/certs:/app/certs
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+- **Code Style**: Follow existing code patterns and ESLint rules
+- **Testing**: Include tests for new features
+- **Documentation**: Update relevant documentation
+- **TypeScript**: Use TypeScript for new features when possible
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
 - **Model Context Protocol**: For the MCP framework
 - **Puppeteer**: For browser automation capabilities and advanced interaction patterns
 - **Lighthouse**: For web analysis and auditing
+- **W3C WebDriver BiDi**: For the bidirectional protocol specification
 - **Docker**: For containerization and deployment
 
 ## 📞 Support
@@ -431,7 +414,25 @@ Our enhanced interaction system is built on modern Puppeteer patterns from the [
 - **Issues**: [GitHub Issues](https://github.com/zachshallbetter/MCP-Tools/issues)
 - **Documentation**: [Wiki](https://github.com/zachshallbetter/MCP-Tools/wiki)
 - **Discussions**: [GitHub Discussions](https://github.com/zachshallbetter/MCP-Tools/discussions)
+- **Community**: [MCP Community](https://modelcontextprotocol.io/)
+
+## 🚀 Roadmap
+
+### **Upcoming Features**
+- **Multi-Browser Support**: Firefox, Safari, and Edge automation
+- **Cloud Deployment**: AWS, Azure, and Google Cloud integration
+- **CI/CD Integration**: GitHub Actions, Jenkins, and GitLab CI
+- **Advanced Analytics**: Performance metrics and trend analysis
+- **Plugin System**: Extensible architecture for custom tools
+
+### **Performance Improvements**
+- **Parallel Processing**: Concurrent browser automation
+- **Resource Optimization**: Memory and CPU usage optimization
+- **Caching System**: Intelligent response caching
+- **Load Balancing**: Horizontal scaling and distribution
 
 ---
 
-**Built with ❤️ for the MCP community**
+**MCP-Tools: The most comprehensive browser automation platform for professional web development and testing workflows! 🚀**
+
+*Built with ❤️ for the MCP community*
