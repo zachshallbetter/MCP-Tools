@@ -11,9 +11,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.17.4"
-  },
-  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.4",
     "typescript": "^5.0.0",
     "@types/node": "^18.0.0"
   },

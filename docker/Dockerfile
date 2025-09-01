@@ -17,8 +17,8 @@ COPY src/mcp-server/package*.json ./src/mcp-server/
 COPY src/http-server/package*.json ./src/http-server/
 
 # Install dependencies
-RUN cd src/mcp-server && npm ci --only=production
-RUN cd src/http-server && npm ci --only=production
+RUN cd src/mcp-server && npm install --omit=dev
+RUN cd src/http-server && npm install --omit=dev
 
 # Copy source code
 COPY src/ ./src/

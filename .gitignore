@@ -119,3 +119,4 @@ docs/_build/
 
 # Local development
 .local/
+certs

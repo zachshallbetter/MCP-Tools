@@ -403,98 +403,100 @@ const tools: Tool[] = [
   }
 ];
 
-// Register all tools
+// Register all tools using the correct MCP SDK method
 tools.forEach(tool => {
-  server.setToolHandler(tool.name, async (args) => {
-    try {
-      let result;
+  if (tool.name && tool.description) {
+    server.tool(tool.name, tool.description, async (args: any) => {
+      try {
+        let result;
 
-      switch (tool.name) {
-        case "takeScreenshot":
-          result = await makeRequest("/capture-screenshot", args);
-          break;
+        switch (tool.name) {
+          case "takeScreenshot":
+            result = await makeRequest("/capture-screenshot", args);
+            break;
 
-        case "runLighthouseAudit":
-          result = await makeRequest("/lighthouse-audit", args);
-          break;
+          case "runLighthouseAudit":
+            result = await makeRequest("/lighthouse-audit", args);
+            break;
 
-        case "clickElement":
-          result = await makeRequest("/interact/click", args);
-          break;
+          case "clickElement":
+            result = await makeRequest("/interact/click", args);
+            break;
 
-        case "fillInput":
-          result = await makeRequest("/interact/fill", args);
-          break;
+          case "fillInput":
+            result = await makeRequest("/interact/fill", args);
+            break;
 
-        case "fillForm":
-          result = await makeRequest("/interact/fill-form", args);
-          break;
+          case "fillForm":
+            result = await makeRequest("/interact/fill-form", args);
+            break;
 
-        case "evaluateJavaScript":
-          result = await makeRequest("/js/evaluate", args);
-          break;
+          case "evaluateJavaScript":
+            result = await makeRequest("/js/evaluate", args);
+            break;
 
-        case "executeFunction":
-          result = await makeRequest("/js/execute-function", args);
-          break;
+          case "executeFunction":
+            result = await makeRequest("/js/execute-function", args);
+            break;
 
-        case "enableNetworkInterception":
-          result = await makeRequest("/network/enable-interception", args);
-          break;
+          case "enableNetworkInterception":
+            result = await makeRequest("/network/enable-interception", args);
+            break;
 
-        case "blockRequests":
-          result = await makeRequest("/network/block-requests", args);
-          break;
+          case "blockRequests":
+            result = await makeRequest("/network/block-requests", args);
+            break;
 
-        case "mockResponse":
-          result = await makeRequest("/network/mock-response", args);
-          break;
+          case "mockResponse":
+            result = await makeRequest("/network/mock-response", args);
+            break;
 
-        case "connectBiDi":
-          result = await makeRequest("/bidi/connect", args);
-          break;
+          case "connectBiDi":
+            result = await makeRequest("/bidi/connect", args);
+            break;
 
-        case "createBrowsingContext":
-          result = await makeRequest("/bidi/create-context", args);
-          break;
+          case "createBrowsingContext":
+            result = await makeRequest("/bidi/create-context", args);
+            break;
 
-        case "getConsoleLogs":
-          result = await makeRequest("/console-logs");
-          break;
+          case "getConsoleLogs":
+            result = await makeRequest("/console-logs");
+            break;
 
-        case "getNetworkLogs":
-          result = await makeRequest("/network/request-log");
-          break;
+          case "getNetworkLogs":
+            result = await makeRequest("/network/request-log");
+            break;
 
-        case "wipeLogs":
-          result = await makeRequest("/wipelogs", {});
-          break;
+          case "wipeLogs":
+            result = await makeRequest("/wipelogs", {});
+            break;
 
-        default:
-          throw new Error(`Unknown tool: ${tool.name}`);
+          default:
+            throw new Error(`Unknown tool: ${tool.name}`);
+        }
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error(`Error in ${tool.name}:`, errorMessage);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Failed to execute ${tool.name}: ${errorMessage}`,
+            },
+          ],
+        };
       }
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(result, null, 2),
-          },
-        ],
-      };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error(`Error in ${tool.name}:`, errorMessage);
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Failed to execute ${tool.name}: ${errorMessage}`,
-          },
-        ],
-      };
-    }
-  });
+    });
+  }
 });
 
 // Start receiving messages on stdio

@@ -16,7 +16,6 @@ services:
       - CERT_DIR=/app/certs
       - CHROMIUM_PATH=/usr/bin/chromium
     volumes:
-      - ../src:/app/src
       - ../certs:/app/certs
       - ../tests:/app/tests
     restart: unless-stopped

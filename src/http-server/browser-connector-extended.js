@@ -3,12 +3,12 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { chromiumScreenshotService } from './chromium-screenshot-service.js';
-import { lighthouseService } from './lighthouse-service.js';
-import { EnhancedInteractionService } from './enhanced-interaction-service.js';
-import { JavaScriptExecutionService } from './javascript-execution-service.js';
-import { NetworkInterceptionService } from './network-interception-service.js';
-import { WebDriverBiDiService } from './webdriver-bidi-service.js';
+import { chromiumScreenshotService } from '../services/chromium-screenshot-service.js';
+import { lighthouseService } from '../services/lighthouse-service.js';
+import { EnhancedInteractionService } from '../services/enhanced-interaction-service.js';
+import { JavaScriptExecutionService } from '../services/javascript-execution-service.js';
+import { NetworkInterceptionService } from '../services/network-interception-service.js';
+import { WebDriverBiDiService } from '../services/webdriver-bidi-service.js';
 import fs from 'fs';
 import path from 'path';
 import http from 'http';
